@@ -1,4 +1,3 @@
--- create_tables.sql
 CREATE TABLE IF NOT EXISTS users (
                                      id BIGSERIAL PRIMARY KEY,
                                      email VARCHAR(255) UNIQUE NOT NULL,
@@ -7,5 +6,5 @@ CREATE TABLE IF NOT EXISTS users (
                                      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                                      updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
--- index for fast search
-CREATE INDEX idx_users_email ON users(email);
+
+CREATE INDEX IF NOT EXISTS idx_users_email ON users(email);

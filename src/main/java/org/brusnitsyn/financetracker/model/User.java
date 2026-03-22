@@ -36,8 +36,8 @@ public class User {
     private String name;
 
     @CreationTimestamp
-    private LocalDateTime created;
+    private LocalDateTime createdAt;
 
     @UpdateTimestamp
-    private LocalDateTime updated;
+    private LocalDateTime updatedAt;
 }
