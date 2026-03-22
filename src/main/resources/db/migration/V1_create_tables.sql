@@ -4,7 +4,8 @@ CREATE TABLE IF NOT EXISTS users (
                                      email VARCHAR(255) UNIQUE NOT NULL,
                                      password VARCHAR(255) NOT NULL,
                                      name VARCHAR(100),
-                                     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+                                     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                                     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
 CREATE TABLE IF NOT EXISTS categories (
@@ -37,6 +38,7 @@ CREATE TABLE IF NOT EXISTS transactions (
 );
 
 -- index for fast search
+CREATE INDEX idx_users_email ON users(email);
 CREATE INDEX idx_transactions_account_id ON transactions(account_id);
 CREATE INDEX idx_transactions_date ON transactions(date);
 CREATE INDEX idx_transactions_type ON transactions(type);
