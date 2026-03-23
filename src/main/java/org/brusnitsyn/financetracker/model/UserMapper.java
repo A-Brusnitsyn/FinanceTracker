@@ -1,6 +1,7 @@
 package org.brusnitsyn.financetracker.model;
 
 import org.brusnitsyn.financetracker.model.dto.UserResponse;
+import org.brusnitsyn.financetracker.model.entity.User;
 import org.springframework.stereotype.Component;
 
 @Component

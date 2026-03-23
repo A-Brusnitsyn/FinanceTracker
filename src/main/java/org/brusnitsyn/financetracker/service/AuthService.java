@@ -2,7 +2,7 @@ package org.brusnitsyn.financetracker.service;
 
 import lombok.extern.slf4j.Slf4j;
 import org.brusnitsyn.financetracker.exception.UserAlreadyExistsException;
-import org.brusnitsyn.financetracker.model.User;
+import org.brusnitsyn.financetracker.model.entity.User;
 import org.brusnitsyn.financetracker.model.UserMapper;
 import org.brusnitsyn.financetracker.model.dto.RegistrationRequest;
 import org.brusnitsyn.financetracker.model.dto.UserResponse;
