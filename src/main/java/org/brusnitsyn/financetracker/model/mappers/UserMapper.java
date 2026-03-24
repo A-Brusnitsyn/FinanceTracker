@@ -1,4 +1,4 @@
-package org.brusnitsyn.financetracker.model;
+package org.brusnitsyn.financetracker.model.mappers;
 
 import org.brusnitsyn.financetracker.model.dto.UserResponse;
 import org.brusnitsyn.financetracker.model.entity.User;
