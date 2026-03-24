@@ -3,14 +3,11 @@ CREATE TABLE IF NOT EXISTS categories (
                                           user_id BIGINT NOT NULL,
                                           name VARCHAR(100) NOT NULL,
                                           type VARCHAR(10) NOT NULL CHECK (type IN ('INCOME', 'EXPENSE')),
-                                          color VARCHAR(7) DEFAULT '#808080',
                                           created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                                           updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                                           CONSTRAINT fk_categories_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
                                           UNIQUE(user_id, name)
 );
-
-CREATE INDEX IF NOT EXISTS idx_categories_user_id ON categories(user_id);
 
 -- Transactions table
 CREATE TABLE IF NOT EXISTS transactions (
@@ -29,7 +26,10 @@ CREATE TABLE IF NOT EXISTS transactions (
                                             CONSTRAINT fk_transactions_category FOREIGN KEY (category_id) REFERENCES categories(id) ON DELETE CASCADE
 );
 
--- Indexes for transactions
+-- Create indexes for categories
+CREATE INDEX IF NOT EXISTS idx_categories_user_id ON categories(user_id);
+
+-- Create indexes for transactions
 CREATE INDEX IF NOT EXISTS idx_transactions_user_id ON transactions(user_id);
 CREATE INDEX IF NOT EXISTS idx_transactions_account_id ON transactions(account_id);
 CREATE INDEX IF NOT EXISTS idx_transactions_date ON transactions(date);
