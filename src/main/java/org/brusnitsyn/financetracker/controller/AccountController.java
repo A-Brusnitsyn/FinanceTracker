@@ -1,16 +1,22 @@
 package org.brusnitsyn.financetracker.controller;
 
+import jakarta.validation.Valid;
 import org.brusnitsyn.financetracker.model.dto.AccountResponse;
+import org.brusnitsyn.financetracker.model.dto.CreateAccountRequest;
 import org.brusnitsyn.financetracker.service.AccountService;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
 @RestController
-@RequestMapping("/account")
+@RequestMapping("/accounts")
 public class AccountController {
     private final AccountService accountService;
 
@@ -19,7 +25,13 @@ public class AccountController {
     }
 
     @GetMapping
-    public List<AccountResponse> getAccounts(@RequestParam Long userId){
+    public List<AccountResponse> getAccounts(@RequestParam Long userId) {
         return accountService.getUserAccounts(userId);
+    }
+
+    @PostMapping
+    @ResponseStatus(HttpStatus.CREATED)
+    public AccountResponse createAccount(@RequestParam Long userId, @Valid @RequestBody CreateAccountRequest request){
+        return accountService.createAccount(userId,request);
     }
 }

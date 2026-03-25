@@ -2,10 +2,14 @@ package org.brusnitsyn.financetracker.service;
 
 import lombok.extern.slf4j.Slf4j;
 import org.brusnitsyn.financetracker.model.dto.AccountResponse;
+import org.brusnitsyn.financetracker.model.dto.CreateAccountRequest;
+import org.brusnitsyn.financetracker.model.entity.Account;
+import org.brusnitsyn.financetracker.model.entity.User;
 import org.brusnitsyn.financetracker.model.mappers.AccountMapper;
 import org.brusnitsyn.financetracker.repository.AccountRepository;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 @Service
@@ -19,15 +23,32 @@ public class AccountService {
         this.accountMapper = accountMapper;
     }
 
-    public List<AccountResponse> getUserAccounts(Long userId){
+    public List<AccountResponse> getUserAccounts(Long userId) {
         log.info("Fetching accounts for userId={}", userId);
 
         List<AccountResponse> accounts = accountRepository.findByUserId(userId)
                 .stream()
-                .map(accountMapper::AccountToResponse)
+                .map(accountMapper::accountToResponse)
                 .toList();
-        log.info("Found {} accounts for userId={}", accounts.size(),userId);
+        log.info("Found {} accounts for userId={}", accounts.size(), userId);
 
         return accounts;
+    }
+
+    public AccountResponse createAccount(Long userId, CreateAccountRequest request){
+        log.info("Creating account for userId={}, name={}", userId, request.getName());
+
+        Account account = Account.builder()
+                .user(User.builder().id(userId).build())
+                .name(request.getName())
+                .currency(request.getCurrency().toUpperCase())
+                .balance(BigDecimal.ZERO)
+                .build();
+
+        Account savedAccount = accountRepository.save(account);
+
+        log.info("Account created: id={}, userId={}", savedAccount.getId(), userId);
+
+        return accountMapper.accountToResponse(savedAccount);
     }
 }
