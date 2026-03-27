@@ -3,10 +3,13 @@ package org.brusnitsyn.financetracker.controller;
 import jakarta.validation.Valid;
 import org.brusnitsyn.financetracker.model.dto.AccountResponse;
 import org.brusnitsyn.financetracker.model.dto.CreateAccountRequest;
+import org.brusnitsyn.financetracker.model.dto.UpdateAccountRequest;
 import org.brusnitsyn.financetracker.service.AccountService;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -33,5 +36,10 @@ public class AccountController {
     @ResponseStatus(HttpStatus.CREATED)
     public AccountResponse createAccount(@RequestParam Long userId, @Valid @RequestBody CreateAccountRequest request){
         return accountService.createAccount(userId,request);
+    }
+
+    @PutMapping("/{id}")
+    public AccountResponse updateAccount(@PathVariable Long id, @RequestParam Long userId, @Valid @RequestBody UpdateAccountRequest request){
+        return accountService.updateAccount(userId, id, request);
     }
 }

@@ -3,6 +3,7 @@ package org.brusnitsyn.financetracker.service;
 import lombok.extern.slf4j.Slf4j;
 import org.brusnitsyn.financetracker.model.dto.AccountResponse;
 import org.brusnitsyn.financetracker.model.dto.CreateAccountRequest;
+import org.brusnitsyn.financetracker.model.dto.UpdateAccountRequest;
 import org.brusnitsyn.financetracker.model.entity.Account;
 import org.brusnitsyn.financetracker.model.entity.User;
 import org.brusnitsyn.financetracker.model.mappers.AccountMapper;
@@ -35,7 +36,7 @@ public class AccountService {
         return accounts;
     }
 
-    public AccountResponse createAccount(Long userId, CreateAccountRequest request){
+    public AccountResponse createAccount(Long userId, CreateAccountRequest request) {
         log.info("Creating account for userId={}, name={}", userId, request.getName());
 
         Account account = Account.builder()
@@ -50,5 +51,20 @@ public class AccountService {
         log.info("Account created: id={}, userId={}", savedAccount.getId(), userId);
 
         return accountMapper.accountToResponse(savedAccount);
+    }
+
+    public AccountResponse updateAccount(Long userId, Long accountId, UpdateAccountRequest request) {
+        log.info("Updating account name id={} for userId={}", accountId, userId);
+
+        Account account = accountRepository.findByIdAndUserId(accountId, userId)
+                .orElseThrow(() -> new IllegalArgumentException("Account not find or acess denied"));
+
+        account.setName(request.getName());
+
+        Account updatedAccount = accountRepository.save(account);
+
+        log.info("Account updated id={}", updatedAccount.getId());
+
+        return accountMapper.accountToResponse(updatedAccount);
     }
 }
