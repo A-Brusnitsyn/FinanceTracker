@@ -9,6 +9,7 @@ import org.brusnitsyn.financetracker.model.entity.User;
 import org.brusnitsyn.financetracker.model.enums.TransactionType;
 import org.brusnitsyn.financetracker.model.mappers.CategoryMapper;
 import org.brusnitsyn.financetracker.repository.CategoryRepository;
+import org.brusnitsyn.financetracker.repository.TransactionRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -20,6 +21,7 @@ public class CategoryService {
 
     private final CategoryRepository categoryRepository;
     private final CategoryMapper categoryMapper;
+    private final TransactionRepository transactionRepository;
 
     public List<CategoryResponse> getCategories(Long userId, TransactionType type){
         log.info("Fetching categories for userId ={} type={}",userId,type);
@@ -50,5 +52,22 @@ public class CategoryService {
         log.info("Category name={} created for user userId={}", category.getName(), request.getUserId());
 
         return categoryMapper.categoryToResponse(saved);
+    }
+
+    public void deleteCategory(Long userId, Long categoryId){
+        log.info("Deleting category id={} for userId={}", categoryId, userId);
+
+        Category category=categoryRepository.findByIdAndUserId(categoryId, userId).
+                orElseThrow(()->new IllegalArgumentException("Category not found or access denied"));
+
+        boolean used=transactionRepository.existsByCategoryId(categoryId);
+
+        if (used){
+            throw new IllegalStateException("Category is used in transactions");
+        }
+
+        categoryRepository.delete(category);
+
+        log.info("Category deleted id={}", categoryId);
     }
 }
