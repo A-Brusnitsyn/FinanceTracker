@@ -54,10 +54,10 @@ public class AccountService {
     }
 
     public AccountResponse updateAccount(Long userId, Long accountId, UpdateAccountRequest request) {
-        log.info("Updating account name id={} for userId={}", accountId, userId);
+        log.info("Updating account name for id={}, userId={}", accountId, userId);
 
         Account account = accountRepository.findByIdAndUserId(accountId, userId)
-                .orElseThrow(() -> new IllegalArgumentException("Account not find or acess denied"));
+                .orElseThrow(() -> new IllegalArgumentException("Account not find or access denied"));
 
         account.setName(request.getName());
 
@@ -66,5 +66,20 @@ public class AccountService {
         log.info("Account updated id={}", updatedAccount.getId());
 
         return accountMapper.accountToResponse(updatedAccount);
+    }
+
+    public void deleteAccount(Long userId, Long accountId){
+        log.info("Deleting account id={}, for userId={}", accountId, userId);
+
+        Account account=accountRepository.findByIdAndUserId(accountId,userId)
+                .orElseThrow(() -> new IllegalArgumentException("Account not find or access denied"));
+
+        if (account.getBalance().compareTo(BigDecimal.ZERO)!=0){
+            throw new IllegalStateException("Account balance must be zero to delete");
+        }
+
+        accountRepository.delete(account);
+
+        log.info("Account deleted id={}", accountId);
     }
 }

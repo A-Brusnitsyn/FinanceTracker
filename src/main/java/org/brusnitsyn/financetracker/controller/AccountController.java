@@ -6,6 +6,7 @@ import org.brusnitsyn.financetracker.model.dto.CreateAccountRequest;
 import org.brusnitsyn.financetracker.model.dto.UpdateAccountRequest;
 import org.brusnitsyn.financetracker.service.AccountService;
 import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -39,7 +40,13 @@ public class AccountController {
     }
 
     @PutMapping("/{id}")
-    public AccountResponse updateAccount(@PathVariable Long id, @RequestParam Long userId, @Valid @RequestBody UpdateAccountRequest request){
-        return accountService.updateAccount(userId, id, request);
+    public AccountResponse updateAccount(@PathVariable Long accountId, @RequestParam Long userId, @Valid @RequestBody UpdateAccountRequest request){
+        return accountService.updateAccount(userId, accountId, request);
+    }
+
+    @DeleteMapping("/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteAccount(@PathVariable Long id, @RequestParam Long userId){
+        accountService.deleteAccount(userId, id);
     }
 }
