@@ -45,15 +45,13 @@ public class CustomExceptionHandler {
         return buildResponse(HttpStatus.CONFLICT, e.getMessage());
     }
 
-    @ExceptionHandler(IllegalArgumentException.class)
-    public ResponseEntity<ErrorResponse> handleNotFound(IllegalArgumentException e) {
-        log.error("Not found: {}", e.getMessage());
-        return buildResponse(HttpStatus.NOT_FOUND, e.getMessage());
+    @ExceptionHandler(AccountHasBalanceException.class)
+    public ResponseEntity<ErrorResponse> handleAccountHasBalance(AccountHasBalanceException e) {
+        return buildResponse(HttpStatus.CONFLICT, e.getMessage());
     }
 
-    @ExceptionHandler(IllegalStateException.class)
-    public ResponseEntity<ErrorResponse> handleConflict(IllegalStateException e) {
-        log.error("Conflict: {}", e.getMessage());
+    @ExceptionHandler(CategoryInUseException.class)
+    public ResponseEntity<ErrorResponse> handleCategoryInUse(CategoryInUseException e) {
         return buildResponse(HttpStatus.CONFLICT, e.getMessage());
     }
 

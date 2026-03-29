@@ -2,6 +2,9 @@ package org.brusnitsyn.financetracker.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.brusnitsyn.financetracker.exception.CategoryAlreadyExistsException;
+import org.brusnitsyn.financetracker.exception.CategoryInUseException;
+import org.brusnitsyn.financetracker.exception.CategoryNotFoundException;
 import org.brusnitsyn.financetracker.model.dto.CategoryCreateRequest;
 import org.brusnitsyn.financetracker.model.dto.CategoryResponse;
 import org.brusnitsyn.financetracker.model.entity.Category;
@@ -38,7 +41,7 @@ public class CategoryService {
         boolean exists = categoryRepository.existsByUserIdAndNameIgnoreCaseAndType(request.getUserId(), request.getName(), request.getType());
 
         if (exists) {
-            throw new IllegalStateException("Category already exists");
+            throw new CategoryAlreadyExistsException(request.getName());
         }
 
         Category category=Category.builder()
@@ -58,12 +61,12 @@ public class CategoryService {
         log.info("Deleting category id={} for userId={}", categoryId, userId);
 
         Category category=categoryRepository.findByIdAndUserId(categoryId, userId).
-                orElseThrow(()->new IllegalArgumentException("Category not found or access denied"));
+                orElseThrow(()->new CategoryNotFoundException(categoryId));
 
         boolean used=transactionRepository.existsByCategoryId(categoryId);
 
         if (used){
-            throw new IllegalStateException("Category is used in transactions");
+            throw new CategoryInUseException(categoryId);
         }
 
         categoryRepository.delete(category);

@@ -1,6 +1,8 @@
 package org.brusnitsyn.financetracker.service;
 
 import lombok.extern.slf4j.Slf4j;
+import org.brusnitsyn.financetracker.exception.AccountHasBalanceException;
+import org.brusnitsyn.financetracker.exception.AccountNotFoundException;
 import org.brusnitsyn.financetracker.model.dto.AccountResponse;
 import org.brusnitsyn.financetracker.model.dto.CreateAccountRequest;
 import org.brusnitsyn.financetracker.model.dto.UpdateAccountRequest;
@@ -57,7 +59,7 @@ public class AccountService {
         log.info("Updating account name for id={}, userId={}", accountId, userId);
 
         Account account = accountRepository.findByIdAndUserId(accountId, userId)
-                .orElseThrow(() -> new IllegalArgumentException("Account not find or access denied"));
+                .orElseThrow(() -> new AccountNotFoundException(accountId));
 
         account.setName(request.getName());
 
@@ -72,10 +74,10 @@ public class AccountService {
         log.info("Deleting account id={}, for userId={}", accountId, userId);
 
         Account account=accountRepository.findByIdAndUserId(accountId,userId)
-                .orElseThrow(() -> new IllegalArgumentException("Account not find or access denied"));
+                .orElseThrow(() -> new AccountNotFoundException(accountId));
 
         if (account.getBalance().compareTo(BigDecimal.ZERO)!=0){
-            throw new IllegalStateException("Account balance must be zero to delete");
+            throw new AccountHasBalanceException(accountId);
         }
 
         accountRepository.delete(account);

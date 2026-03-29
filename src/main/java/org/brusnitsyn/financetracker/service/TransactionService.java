@@ -3,6 +3,10 @@ package org.brusnitsyn.financetracker.service;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.brusnitsyn.financetracker.exception.AccountNotFoundException;
+import org.brusnitsyn.financetracker.exception.CategoryNotFoundException;
+import org.brusnitsyn.financetracker.exception.InsufficientFundsException;
+import org.brusnitsyn.financetracker.exception.UserNotFoundException;
 import org.brusnitsyn.financetracker.model.dto.TransactionCreateRequest;
 import org.brusnitsyn.financetracker.model.dto.TransactionResponse;
 import org.brusnitsyn.financetracker.model.entity.Account;
@@ -37,13 +41,13 @@ public class TransactionService {
                 request.getUserId(), request.getAccountId(), request.getCategoryId(), request.getAmount());
 
         User user = userRepository.findById(request.getUserId())
-                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+                .orElseThrow(() -> new UserNotFoundException(request.getUserId()));
 
         Account account = accountRepository.findByIdAndUserId(request.getAccountId(), request.getUserId())
-                .orElseThrow(() -> new IllegalArgumentException("Account not found"));
+                .orElseThrow(() -> new AccountNotFoundException(request.getAccountId()));
 
         Category category = categoryRepository.findByIdAndUserId(request.getCategoryId(), request.getUserId())
-                .orElseThrow(() -> new IllegalArgumentException("Category not found"));
+                .orElseThrow(() -> new CategoryNotFoundException(request.getCategoryId()));
 
         BigDecimal newBalance;
 
@@ -52,7 +56,7 @@ public class TransactionService {
         } else {
             newBalance = account.getBalance().subtract(request.getAmount());
             if (newBalance.compareTo(BigDecimal.ZERO) < 0) {
-                throw new IllegalStateException("Insufficient funds");
+                throw new InsufficientFundsException();
             }
         }
 
