@@ -4,11 +4,13 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.brusnitsyn.financetracker.model.dto.TransactionCreateRequest;
+import org.brusnitsyn.financetracker.model.dto.TransactionResponse;
 import org.brusnitsyn.financetracker.model.entity.Account;
 import org.brusnitsyn.financetracker.model.entity.Category;
 import org.brusnitsyn.financetracker.model.entity.Transaction;
 import org.brusnitsyn.financetracker.model.entity.User;
 import org.brusnitsyn.financetracker.model.enums.TransactionType;
+import org.brusnitsyn.financetracker.model.mappers.TransactionMapper;
 import org.brusnitsyn.financetracker.repository.AccountRepository;
 import org.brusnitsyn.financetracker.repository.CategoryRepository;
 import org.brusnitsyn.financetracker.repository.TransactionRepository;
@@ -17,6 +19,7 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -26,6 +29,7 @@ public class TransactionService {
     private final CategoryRepository categoryRepository;
     private final TransactionRepository transactionRepository;
     private final UserRepository userRepository;
+    private final TransactionMapper transactionMapper;
 
     @Transactional
     public void createTransaction(TransactionCreateRequest request) {
@@ -64,5 +68,21 @@ public class TransactionService {
                 .date(LocalDate.now())
                 .build();
         transactionRepository.save(transaction);
+    }
+
+    public List<TransactionResponse> getTransactions(Long userId, Long accountId, Long categoryId, TransactionType type, LocalDate fromDate, LocalDate toDate) {
+        log.info("Fetching transactions for userId={}, accountId={}, categoryId={} type={}, from={}, to={}", userId, accountId, categoryId, type, fromDate, toDate);
+
+        List<Transaction> transactions = transactionRepository.findByUserId(userId);
+
+        return transactions.stream()
+                .filter(transaction -> accountId==null || transaction.getAccount().getId().equals(accountId))
+                .filter(transaction -> categoryId==null || transaction.getCategory().getId().equals(categoryId))
+                .filter(transaction -> type == null || transaction.getType()==type)
+                .filter(transaction -> fromDate==null || !transaction.getDate().isBefore(fromDate))
+                .filter(transaction -> toDate==null || !transaction.getDate().isAfter(toDate))
+                .map(transactionMapper::transactionToResponse)
+                .toList();
+
     }
 }

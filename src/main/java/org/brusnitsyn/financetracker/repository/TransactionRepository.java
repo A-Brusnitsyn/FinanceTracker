@@ -34,4 +34,6 @@ public interface TransactionRepository extends JpaRepository<Transaction, Long> 
             @Param("endDate") LocalDate endDate);
 
     boolean existsByCategoryId(Long categoryId);
+
+    List<Transaction> findByUserId(Long userId);
 }
