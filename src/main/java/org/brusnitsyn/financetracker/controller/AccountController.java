@@ -1,5 +1,9 @@
 package org.brusnitsyn.financetracker.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.brusnitsyn.financetracker.model.dto.AccountResponse;
 import org.brusnitsyn.financetracker.model.dto.CreateAccountRequest;
@@ -21,6 +25,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/accounts")
+@Tag(name = "Accounts", description = "Endpoints for managing user financial accounts")
 public class AccountController {
     private final AccountService accountService;
 
@@ -28,25 +33,60 @@ public class AccountController {
         this.accountService = accountService;
     }
 
+    @Operation(
+            summary = "Get user accounts",
+            description = "Fetching all accounts of a user from database"
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "OK"),
+            @ApiResponse(responseCode = "404", description = "User not found")
+    })
     @GetMapping
     public List<AccountResponse> getAccounts(@RequestParam Long userId) {
         return accountService.getUserAccounts(userId);
     }
 
+    @Operation(
+            summary = "Create account for user",
+            description = "Creates a new financial account with zero balance"
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "201", description = "Account created"),
+            @ApiResponse(responseCode = "400", description = "Invalid input data"),
+            @ApiResponse(responseCode = "404", description = "User not found")
+    })
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public AccountResponse createAccount(@RequestParam Long userId, @Valid @RequestBody CreateAccountRequest request){
-        return accountService.createAccount(userId,request);
+    public AccountResponse createAccount(@RequestParam Long userId, @Valid @RequestBody CreateAccountRequest request) {
+        return accountService.createAccount(userId, request);
     }
 
+    @Operation(
+            summary = "Update account name",
+            description = "Updates the name of an existing account"
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Account updated"),
+            @ApiResponse(responseCode = "400", description = "Invalid input data"),
+            @ApiResponse(responseCode = "404", description = "Account not found")
+    })
     @PutMapping("/{id}")
-    public AccountResponse updateAccount(@PathVariable Long accountId, @RequestParam Long userId, @Valid @RequestBody UpdateAccountRequest request){
-        return accountService.updateAccount(userId, accountId, request);
+    public AccountResponse updateAccount(@PathVariable Long id, @RequestParam Long userId, @Valid @RequestBody UpdateAccountRequest request) {
+        return accountService.updateAccount(userId, id, request);
     }
 
+    @Operation(
+            summary = "Delete account",
+            description = "Deletes an account only if its balance is zero"
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "204", description = "Account deleted successfully"),
+            @ApiResponse(responseCode = "404", description = "Account not found"),
+            @ApiResponse(responseCode = "409", description = "Account has non-zero balance")
+    })
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void deleteAccount(@PathVariable Long id, @RequestParam Long userId){
+    public void deleteAccount(@PathVariable Long id, @RequestParam Long userId) {
         accountService.deleteAccount(userId, id);
     }
 }

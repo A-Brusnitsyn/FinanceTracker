@@ -1,7 +1,6 @@
 package org.brusnitsyn.financetracker.controller;
 
 import jakarta.validation.Valid;
-import lombok.RequiredArgsConstructor;
 import org.brusnitsyn.financetracker.model.dto.CategoryCreateRequest;
 import org.brusnitsyn.financetracker.model.dto.CategoryResponse;
 import org.brusnitsyn.financetracker.model.enums.TransactionType;

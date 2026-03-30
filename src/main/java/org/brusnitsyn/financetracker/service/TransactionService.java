@@ -87,6 +87,5 @@ public class TransactionService {
                 .filter(transaction -> toDate==null || !transaction.getDate().isAfter(toDate))
                 .map(transactionMapper::transactionToResponse)
                 .toList();
-
     }
 }
