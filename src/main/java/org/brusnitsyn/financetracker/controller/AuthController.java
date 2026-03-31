@@ -1,5 +1,9 @@
 package org.brusnitsyn.financetracker.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.brusnitsyn.financetracker.model.dto.RegistrationRequest;
 import org.brusnitsyn.financetracker.model.dto.UserResponse;
@@ -13,6 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/auth")
+@Tag(name = "Authentication", description = "Endpoints for user registration")
 public class AuthController {
     private final AuthService authService;
 
@@ -20,6 +25,14 @@ public class AuthController {
         this.authService = authService;
     }
 
+    @Operation(
+            summary = "Register new user",
+            description = "Creates a new user account with email, password and name"
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "201", description = "User successfully registered"),
+            @ApiResponse(responseCode = "400", description = "Invalid input data"),
+            @ApiResponse(responseCode = "409", description = "User with this email already exists")})
     @PostMapping("/registration")
     @ResponseStatus(HttpStatus.CREATED)
     public UserResponse register(@Valid @RequestBody RegistrationRequest request) {
