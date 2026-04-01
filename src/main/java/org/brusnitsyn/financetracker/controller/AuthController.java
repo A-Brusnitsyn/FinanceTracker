@@ -5,10 +5,16 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
+import org.brusnitsyn.financetracker.model.dto.LoginRequest;
 import org.brusnitsyn.financetracker.model.dto.RegistrationRequest;
+import org.brusnitsyn.financetracker.model.dto.TokenResponse;
 import org.brusnitsyn.financetracker.model.dto.UserResponse;
 import org.brusnitsyn.financetracker.service.AuthService;
+import org.brusnitsyn.financetracker.service.JwtService;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -18,12 +24,12 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/auth")
 @Tag(name = "Authentication", description = "Endpoints for user registration")
+@RequiredArgsConstructor
 public class AuthController {
+    private final AuthenticationManager authenticationManager;
+    private final JwtService jwtService;
     private final AuthService authService;
 
-    public AuthController(AuthService authService) {
-        this.authService = authService;
-    }
 
     @Operation(
             summary = "Register new user",
@@ -35,7 +41,21 @@ public class AuthController {
             @ApiResponse(responseCode = "409", description = "User with this email already exists")})
     @PostMapping("/registration")
     @ResponseStatus(HttpStatus.CREATED)
-    public UserResponse register(@Valid @RequestBody RegistrationRequest request) {
+    public TokenResponse register(@Valid @RequestBody RegistrationRequest request) {
         return authService.registerUser(request);
+    }
+
+    @PostMapping("/login")
+    public TokenResponse login(@RequestBody LoginRequest request) {
+
+        authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(
+                        request.getEmail(),
+                        request.getPassword()
+                )
+        );
+
+        String token = jwtService.generateToken(request.getEmail());
+        return new TokenResponse(token);
     }
 }
