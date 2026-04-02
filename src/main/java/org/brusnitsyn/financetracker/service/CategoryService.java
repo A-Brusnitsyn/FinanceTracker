@@ -25,20 +25,23 @@ public class CategoryService {
     private final CategoryRepository categoryRepository;
     private final CategoryMapper categoryMapper;
     private final TransactionRepository transactionRepository;
+    private final CurrentUserService currentUserService;
 
-    public List<CategoryResponse> getCategories(Long userId, TransactionType type){
-        log.info("Fetching categories for userId ={} type={}",userId,type);
+    public List<CategoryResponse> getCategories(TransactionType type){
+        User user =currentUserService.getCurrentUser();
+        log.info("Fetching categories for user ={} type={}",user.getEmail(),type);
 
-        return (type==null ? categoryRepository.findByUserId(userId) : categoryRepository.findByUserIdAndType(userId, type))
+        return (type==null ? categoryRepository.findByUser(user) : categoryRepository.findByUserAndType(user, type))
                 .stream()
                 .map(categoryMapper::categoryToResponse)
                 .toList();
     }
 
     public CategoryResponse createCategory(CategoryCreateRequest request){
-        log.info("Creating category name={}, type={}, userId={}", request.getName(), request.getType(), request.getUserId());
+        User user =currentUserService.getCurrentUser();
+        log.info("Creating category name={}, type={}, user={}", request.getName(), request.getType(), user.getEmail());
 
-        boolean exists = categoryRepository.existsByUserIdAndNameIgnoreCaseAndType(request.getUserId(), request.getName(), request.getType());
+        boolean exists = categoryRepository.existsByUserAndNameIgnoreCaseAndType(user, request.getName(), request.getType());
 
         if (exists) {
             throw new CategoryAlreadyExistsException(request.getName());
@@ -47,20 +50,21 @@ public class CategoryService {
         Category category=Category.builder()
                 .name(request.getName())
                 .type(request.getType())
-                .user(User.builder().id(request.getUserId()).build())
+                .user(user)
                 .build();
 
         Category saved = categoryRepository.save(category);
 
-        log.info("Category name={} created for user userId={}", category.getName(), request.getUserId());
+        log.info("Category name={} created for user={}", category.getName(), user.getEmail());
 
         return categoryMapper.categoryToResponse(saved);
     }
 
-    public void deleteCategory(Long userId, Long categoryId){
-        log.info("Deleting category id={} for userId={}", categoryId, userId);
+    public void deleteCategory(Long categoryId){
+        User user =currentUserService.getCurrentUser();
+        log.info("Deleting category id={} for user={}", categoryId, user.getEmail());
 
-        Category category=categoryRepository.findByIdAndUserId(categoryId, userId).
+        Category category=categoryRepository.findByIdAndUser(categoryId, user).
                 orElseThrow(()->new CategoryNotFoundException(categoryId));
 
         boolean used=transactionRepository.existsByCategoryId(categoryId);

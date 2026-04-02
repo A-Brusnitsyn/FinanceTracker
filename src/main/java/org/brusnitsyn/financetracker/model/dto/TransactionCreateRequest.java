@@ -8,8 +8,6 @@ import java.math.BigDecimal;
 
 @Data
 public class TransactionCreateRequest {
-    @NotNull
-    private Long userId;
 
     @NotNull
     private Long accountId;

@@ -42,8 +42,8 @@ public class AccountController {
             @ApiResponse(responseCode = "404", description = "User not found")
     })
     @GetMapping
-    public List<AccountResponse> getAccounts(@RequestParam Long userId) {
-        return accountService.getUserAccounts(userId);
+    public List<AccountResponse> getAccounts() {
+        return accountService.getUserAccounts();
     }
 
     @Operation(
@@ -57,8 +57,8 @@ public class AccountController {
     })
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public AccountResponse createAccount(@RequestParam Long userId, @Valid @RequestBody CreateAccountRequest request) {
-        return accountService.createAccount(userId, request);
+    public AccountResponse createAccount(@Valid @RequestBody CreateAccountRequest request) {
+        return accountService.createAccount(request);
     }
 
     @Operation(
@@ -71,8 +71,8 @@ public class AccountController {
             @ApiResponse(responseCode = "404", description = "Account not found")
     })
     @PutMapping("/{id}")
-    public AccountResponse updateAccount(@PathVariable Long id, @RequestParam Long userId, @Valid @RequestBody UpdateAccountRequest request) {
-        return accountService.updateAccount(userId, id, request);
+    public AccountResponse updateAccount(@PathVariable Long id, @Valid @RequestBody UpdateAccountRequest request) {
+        return accountService.updateAccount(id, request);
     }
 
     @Operation(
@@ -86,7 +86,7 @@ public class AccountController {
     })
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void deleteAccount(@PathVariable Long id, @RequestParam Long userId) {
-        accountService.deleteAccount(userId, id);
+    public void deleteAccount(@PathVariable Long id) {
+        accountService.deleteAccount(id);
     }
 }

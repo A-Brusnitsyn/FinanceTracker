@@ -41,8 +41,8 @@ public class CategoryController {
             @ApiResponse(responseCode = "404", description = "User not found")
     })
     @GetMapping
-    public List<CategoryResponse> getCategories(@RequestParam Long userId, @RequestParam(required = false) TransactionType type) {
-        return categoryService.getCategories(userId, type);
+    public List<CategoryResponse> getCategories(@RequestParam(required = false) TransactionType type) {
+        return categoryService.getCategories(type);
     }
 
     @Operation(
@@ -71,7 +71,7 @@ public class CategoryController {
     })
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void deleteCategory(@PathVariable Long id, @RequestParam Long userId){
-        categoryService.deleteCategory(userId, id);
+    public void deleteCategory(@PathVariable Long id){
+        categoryService.deleteCategory(id);
     }
 }

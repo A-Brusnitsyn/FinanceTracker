@@ -57,8 +57,6 @@ public class TransactionController {
     })
     @GetMapping
     public List<TransactionResponse> getTransactions(
-            @Parameter(description = "User ID", required = true, example = "1")
-            @RequestParam Long userId,
             @Parameter(description = "Filter by account ID", example = "3")
             @RequestParam(required = false) Long accountId,
             @Parameter(description = "Filter by category ID", example = "5")
@@ -69,6 +67,6 @@ public class TransactionController {
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate from,
             @Parameter(description = "End date (ISO format)", example = "2024-12-31")
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate to) {
-        return transactionService.getTransactions(userId, accountId, categoryId, type, from, to);
+        return transactionService.getTransactions(accountId, categoryId, type, from, to);
     }
 }

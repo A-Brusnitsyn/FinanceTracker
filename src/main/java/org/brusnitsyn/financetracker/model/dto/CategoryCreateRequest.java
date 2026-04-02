@@ -17,7 +17,4 @@ public class CategoryCreateRequest {
     @NotNull
     @Schema(description = "Transaction type (INCOME or EXPENSE)", example = "INCOME", required = true)
     private TransactionType type;
-
-    @NotNull
-    private Long userId;
 }

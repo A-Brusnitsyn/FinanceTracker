@@ -15,13 +15,11 @@ import org.springframework.stereotype.Service;
 @Slf4j
 public class AuthService {
     private final UserRepository userRepository;
-    private final UserMapper userMapper;
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
 
     public AuthService(UserRepository userRepository, UserMapper userMapper, JwtService jwtService) {
         this.userRepository = userRepository;
-        this.userMapper = userMapper;
         this.passwordEncoder = new BCryptPasswordEncoder();
         this.jwtService = jwtService;
     }

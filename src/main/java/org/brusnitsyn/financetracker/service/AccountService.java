@@ -20,29 +20,32 @@ import java.util.List;
 public class AccountService {
     private final AccountRepository accountRepository;
     private final AccountMapper accountMapper;
+    private final CurrentUserService currentUserService;
 
-    public AccountService(AccountRepository accountRepository, AccountMapper accountMapper) {
+    public AccountService(AccountRepository accountRepository, AccountMapper accountMapper, CurrentUserService currentUserService) {
         this.accountRepository = accountRepository;
         this.accountMapper = accountMapper;
+        this.currentUserService = currentUserService;
     }
 
-    public List<AccountResponse> getUserAccounts(Long userId) {
-        log.info("Fetching accounts for userId={}", userId);
-
-        List<AccountResponse> accounts = accountRepository.findByUserId(userId)
+    public List<AccountResponse> getUserAccounts() {
+        User user =currentUserService.getCurrentUser();
+        log.info("Fetching accounts for user={}", user);
+        List<AccountResponse> accounts = accountRepository.findByUser(user)
                 .stream()
                 .map(accountMapper::accountToResponse)
                 .toList();
-        log.info("Found {} accounts for userId={}", accounts.size(), userId);
+        log.info("Found {} accounts for user={}", accounts.size(), user.getEmail());
 
         return accounts;
     }
 
-    public AccountResponse createAccount(Long userId, CreateAccountRequest request) {
-        log.info("Creating account for userId={}, name={}", userId, request.getName());
+    public AccountResponse createAccount(CreateAccountRequest request) {
+        User user =currentUserService.getCurrentUser();
+        log.info("Creating account for user={}, name={}", user.getEmail(), request.getName());
 
         Account account = Account.builder()
-                .user(User.builder().id(userId).build())
+                .user(user)
                 .name(request.getName())
                 .currency(request.getCurrency().toUpperCase())
                 .balance(BigDecimal.ZERO)
@@ -50,15 +53,16 @@ public class AccountService {
 
         Account savedAccount = accountRepository.save(account);
 
-        log.info("Account created: id={}, userId={}", savedAccount.getId(), userId);
+        log.info("Account created: id={}, user={}", savedAccount.getId(), user.getEmail());
 
         return accountMapper.accountToResponse(savedAccount);
     }
 
-    public AccountResponse updateAccount(Long userId, Long accountId, UpdateAccountRequest request) {
-        log.info("Updating account name for id={}, userId={}", accountId, userId);
+    public AccountResponse updateAccount(Long accountId, UpdateAccountRequest request) {
+        User user =currentUserService.getCurrentUser();
+        log.info("Updating account name for id={}, user={}", accountId, user.getEmail());
 
-        Account account = accountRepository.findByIdAndUserId(accountId, userId)
+        Account account = accountRepository.findByIdAndUser(accountId, user)
                 .orElseThrow(() -> new AccountNotFoundException(accountId));
 
         account.setName(request.getName());
@@ -70,10 +74,11 @@ public class AccountService {
         return accountMapper.accountToResponse(updatedAccount);
     }
 
-    public void deleteAccount(Long userId, Long accountId){
-        log.info("Deleting account id={}, for userId={}", accountId, userId);
+    public void deleteAccount(Long accountId){
+        User user =currentUserService.getCurrentUser();
+        log.info("Deleting account id={}, for user={}", accountId, user);
 
-        Account account=accountRepository.findByIdAndUserId(accountId,userId)
+        Account account=accountRepository.findByIdAndUser(accountId,user)
                 .orElseThrow(() -> new AccountNotFoundException(accountId));
 
         if (account.getBalance().compareTo(BigDecimal.ZERO)!=0){

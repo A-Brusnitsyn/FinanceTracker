@@ -1,6 +1,7 @@
 package org.brusnitsyn.financetracker.repository;
 
 import org.brusnitsyn.financetracker.model.entity.Category;
+import org.brusnitsyn.financetracker.model.entity.User;
 import org.brusnitsyn.financetracker.model.enums.TransactionType;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
@@ -10,13 +11,13 @@ import java.util.Optional;
 
 @Repository
 public interface CategoryRepository extends JpaRepository<Category, Long> {
-    List<Category> findByUserId(Long userId);
+    List<Category> findByUser(User user);
 
-    List<Category> findByUserIdAndType(Long userId, TransactionType type);
+    List<Category> findByUserAndType(User user, TransactionType type);
 
-    Optional<Category> findByIdAndUserId(Long id, Long userId);
+    Optional<Category> findByIdAndUser(Long id, User user);
 
     boolean existsByUserIdAndName(Long userId, String name);
 
-    boolean existsByUserIdAndNameIgnoreCaseAndType(Long userid, String name, TransactionType type);
+    boolean existsByUserAndNameIgnoreCaseAndType(User user, String name, TransactionType type);
 }

@@ -14,6 +14,7 @@ import org.brusnitsyn.financetracker.model.entity.Category;
 import org.brusnitsyn.financetracker.model.entity.Transaction;
 import org.brusnitsyn.financetracker.model.entity.User;
 import org.brusnitsyn.financetracker.model.enums.TransactionType;
+import org.brusnitsyn.financetracker.model.mappers.AccountMapper;
 import org.brusnitsyn.financetracker.model.mappers.TransactionMapper;
 import org.brusnitsyn.financetracker.repository.AccountRepository;
 import org.brusnitsyn.financetracker.repository.CategoryRepository;
@@ -34,19 +35,18 @@ public class TransactionService {
     private final TransactionRepository transactionRepository;
     private final UserRepository userRepository;
     private final TransactionMapper transactionMapper;
+    private final CurrentUserService currentUserService;
 
     @Transactional
     public void createTransaction(TransactionCreateRequest request) {
-        log.info("Creating transaction userId={}, accountId={}, categoryId={}, amount={}",
-                request.getUserId(), request.getAccountId(), request.getCategoryId(), request.getAmount());
+        User user =currentUserService.getCurrentUser();
+        log.info("Creating transaction user={}, accountId={}, categoryId={}, amount={}",
+                user.getEmail(), request.getAccountId(), request.getCategoryId(), request.getAmount());
 
-        User user = userRepository.findById(request.getUserId())
-                .orElseThrow(() -> new UserNotFoundException(request.getUserId()));
-
-        Account account = accountRepository.findByIdAndUserId(request.getAccountId(), request.getUserId())
+        Account account = accountRepository.findByIdAndUser(request.getAccountId(), user)
                 .orElseThrow(() -> new AccountNotFoundException(request.getAccountId()));
 
-        Category category = categoryRepository.findByIdAndUserId(request.getCategoryId(), request.getUserId())
+        Category category = categoryRepository.findByIdAndUser(request.getCategoryId(), user)
                 .orElseThrow(() -> new CategoryNotFoundException(request.getCategoryId()));
 
         BigDecimal newBalance;
@@ -74,10 +74,11 @@ public class TransactionService {
         transactionRepository.save(transaction);
     }
 
-    public List<TransactionResponse> getTransactions(Long userId, Long accountId, Long categoryId, TransactionType type, LocalDate fromDate, LocalDate toDate) {
-        log.info("Fetching transactions for userId={}, accountId={}, categoryId={} type={}, from={}, to={}", userId, accountId, categoryId, type, fromDate, toDate);
+    public List<TransactionResponse> getTransactions(Long accountId, Long categoryId, TransactionType type, LocalDate fromDate, LocalDate toDate) {
+        User user =currentUserService.getCurrentUser();
+        log.info("Fetching transactions for user={}, accountId={}, categoryId={} type={}, from={}, to={}", user.getEmail(), accountId, categoryId, type, fromDate, toDate);
 
-        List<Transaction> transactions = transactionRepository.findByUserId(userId);
+        List<Transaction> transactions = transactionRepository.findByUser(user);
 
         return transactions.stream()
                 .filter(transaction -> accountId==null || transaction.getAccount().getId().equals(accountId))
