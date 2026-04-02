@@ -6,7 +6,6 @@ import org.brusnitsyn.financetracker.model.dto.TokenResponse;
 import org.brusnitsyn.financetracker.model.entity.User;
 import org.brusnitsyn.financetracker.model.mappers.UserMapper;
 import org.brusnitsyn.financetracker.model.dto.RegistrationRequest;
-import org.brusnitsyn.financetracker.model.dto.UserResponse;
 import org.brusnitsyn.financetracker.repository.UserRepository;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;

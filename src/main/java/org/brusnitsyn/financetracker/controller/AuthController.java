@@ -9,7 +9,6 @@ import lombok.RequiredArgsConstructor;
 import org.brusnitsyn.financetracker.model.dto.LoginRequest;
 import org.brusnitsyn.financetracker.model.dto.RegistrationRequest;
 import org.brusnitsyn.financetracker.model.dto.TokenResponse;
-import org.brusnitsyn.financetracker.model.dto.UserResponse;
 import org.brusnitsyn.financetracker.service.AuthService;
 import org.brusnitsyn.financetracker.service.JwtService;
 import org.springframework.http.HttpStatus;
@@ -45,6 +44,10 @@ public class AuthController {
         return authService.registerUser(request);
     }
 
+    @Operation(
+            summary = "Login",
+            description = "Authenticate in system"
+    )
     @PostMapping("/login")
     public TokenResponse login(@RequestBody LoginRequest request) {
 
