@@ -1,6 +1,7 @@
 package org.brusnitsyn.financetracker.config;
 
 import io.swagger.v3.oas.annotations.OpenAPIDefinition;
+import io.swagger.v3.oas.annotations.enums.SecuritySchemeType;
 import io.swagger.v3.oas.annotations.info.Info;
 import org.springframework.context.annotation.Configuration;
 import io.swagger.v3.oas.models.Components;
@@ -16,7 +17,14 @@ import org.springframework.context.annotation.Bean;
                 version = "1.0",
                 description = "REST API for personal finance tracking. " +
                         "Allows users to manage accounts, categories, and transactions."
-        )
+        ),
+security = @io.swagger.v3.oas.annotations.security.SecurityRequirement(name = "bearerAuth")
+)
+@io.swagger.v3.oas.annotations.security.SecurityScheme(
+        name = "bearerAuth",
+        type = SecuritySchemeType.HTTP,
+        scheme = "bearer",
+        bearerFormat = "JWT"
 )
 public class SwaggerConfig {
     @Bean

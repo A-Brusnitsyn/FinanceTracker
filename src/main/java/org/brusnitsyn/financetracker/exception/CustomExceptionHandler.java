@@ -16,42 +16,49 @@ public class CustomExceptionHandler {
 
     @ExceptionHandler(UserAlreadyExistsException.class)
     public ResponseEntity<ErrorResponse> handleUserAlreadyExists(UserAlreadyExistsException e) {
-        log.error("User already exists: {} ", e.getMessage());
+        log.warn("Business exception: {}", e.getMessage());
         return buildResponse(HttpStatus.CONFLICT, e.getMessage());
     }
 
     @ExceptionHandler(UserNotFoundException.class)
     public ResponseEntity<ErrorResponse> handleUserNotFound(UserNotFoundException e) {
+        log.warn("Business exception: {}", e.getMessage());
         return buildResponse(HttpStatus.NOT_FOUND, e.getMessage());
     }
 
     @ExceptionHandler(AccountNotFoundException.class)
     public ResponseEntity<ErrorResponse> handleAccountNotFound(AccountNotFoundException e) {
+        log.warn("Business exception: {}", e.getMessage());
         return buildResponse(HttpStatus.NOT_FOUND, e.getMessage());
     }
 
     @ExceptionHandler(CategoryNotFoundException.class)
     public ResponseEntity<ErrorResponse> handleCategoryNotFound(CategoryNotFoundException e) {
+        log.warn("Business exception: {}", e.getMessage());
         return buildResponse(HttpStatus.NOT_FOUND, e.getMessage());
     }
 
     @ExceptionHandler(InsufficientFundsException.class)
     public ResponseEntity<ErrorResponse> handleInsufficientFunds(InsufficientFundsException e) {
+        log.warn("Business exception: {}", e.getMessage());
         return buildResponse(HttpStatus.CONFLICT, e.getMessage());
     }
 
     @ExceptionHandler(CategoryAlreadyExistsException.class)
     public ResponseEntity<ErrorResponse> handleCategoryExists(CategoryAlreadyExistsException e) {
+        log.warn("Business exception: {}", e.getMessage());
         return buildResponse(HttpStatus.CONFLICT, e.getMessage());
     }
 
     @ExceptionHandler(AccountHasBalanceException.class)
     public ResponseEntity<ErrorResponse> handleAccountHasBalance(AccountHasBalanceException e) {
+        log.warn("Business exception: {}", e.getMessage());
         return buildResponse(HttpStatus.CONFLICT, e.getMessage());
     }
 
     @ExceptionHandler(CategoryInUseException.class)
     public ResponseEntity<ErrorResponse> handleCategoryInUse(CategoryInUseException e) {
+        log.warn("Business exception: {}", e.getMessage());
         return buildResponse(HttpStatus.CONFLICT, e.getMessage());
     }
 

@@ -6,6 +6,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.brusnitsyn.financetracker.model.dto.LoginRequest;
 import org.brusnitsyn.financetracker.model.dto.RegistrationRequest;
 import org.brusnitsyn.financetracker.model.dto.TokenResponse;
@@ -20,6 +21,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
+@Slf4j
 @RestController
 @RequestMapping("/auth")
 @Tag(name = "Authentication", description = "Endpoints for user registration")
@@ -41,6 +43,7 @@ public class AuthController {
     @PostMapping("/registration")
     @ResponseStatus(HttpStatus.CREATED)
     public TokenResponse register(@Valid @RequestBody RegistrationRequest request) {
+        log.info("Registering user request");
         return authService.registerUser(request);
     }
 
@@ -50,6 +53,7 @@ public class AuthController {
     )
     @PostMapping("/login")
     public TokenResponse login(@RequestBody LoginRequest request) {
+        log.info("Login user={}", request.getEmail());
 
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(

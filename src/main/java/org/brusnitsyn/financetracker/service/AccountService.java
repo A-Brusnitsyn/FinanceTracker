@@ -30,7 +30,7 @@ public class AccountService {
 
     public List<AccountResponse> getUserAccounts() {
         User user =currentUserService.getCurrentUser();
-        log.info("Fetching accounts for user={}", user);
+        log.info("Fetching accounts for user={}", user.getEmail());
         List<AccountResponse> accounts = accountRepository.findByUser(user)
                 .stream()
                 .map(accountMapper::accountToResponse)

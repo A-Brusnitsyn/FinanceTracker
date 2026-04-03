@@ -7,6 +7,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.brusnitsyn.financetracker.model.dto.TransactionCreateRequest;
 import org.brusnitsyn.financetracker.model.dto.TransactionResponse;
 import org.brusnitsyn.financetracker.model.enums.TransactionType;
@@ -24,6 +25,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.time.LocalDate;
 import java.util.List;
 
+@Slf4j
 @RestController
 @RequestMapping("/transactions")
 @RequiredArgsConstructor
@@ -44,6 +46,7 @@ public class TransactionController {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public void createTransaction(@Valid @RequestBody TransactionCreateRequest request) {
+        log.info("Create transaction request");
         transactionService.createTransaction(request);
     }
 
@@ -67,6 +70,7 @@ public class TransactionController {
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate from,
             @Parameter(description = "End date (ISO format)", example = "2024-12-31")
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate to) {
+        log.debug("Get transaction request");
         return transactionService.getTransactions(accountId, categoryId, type, from, to);
     }
 }

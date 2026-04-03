@@ -5,6 +5,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import lombok.extern.slf4j.Slf4j;
 import org.brusnitsyn.financetracker.model.dto.AccountResponse;
 import org.brusnitsyn.financetracker.model.dto.CreateAccountRequest;
 import org.brusnitsyn.financetracker.model.dto.UpdateAccountRequest;
@@ -17,12 +18,12 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
+@Slf4j
 @RestController
 @RequestMapping("/accounts")
 @Tag(name = "Accounts", description = "Endpoints for managing user financial accounts")
@@ -43,6 +44,7 @@ public class AccountController {
     })
     @GetMapping
     public List<AccountResponse> getAccounts() {
+        log.debug("GET /accounts");
         return accountService.getUserAccounts();
     }
 
@@ -58,6 +60,7 @@ public class AccountController {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public AccountResponse createAccount(@Valid @RequestBody CreateAccountRequest request) {
+        log.info("Create account request");
         return accountService.createAccount(request);
     }
 
@@ -72,6 +75,7 @@ public class AccountController {
     })
     @PutMapping("/{id}")
     public AccountResponse updateAccount(@PathVariable Long id, @Valid @RequestBody UpdateAccountRequest request) {
+        log.info("Update account request");
         return accountService.updateAccount(id, request);
     }
 
@@ -87,6 +91,7 @@ public class AccountController {
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteAccount(@PathVariable Long id) {
+        log.info("Delete account request");
         accountService.deleteAccount(id);
     }
 }

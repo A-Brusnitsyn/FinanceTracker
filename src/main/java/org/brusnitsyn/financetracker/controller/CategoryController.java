@@ -5,6 +5,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import lombok.extern.slf4j.Slf4j;
 import org.brusnitsyn.financetracker.model.dto.CategoryCreateRequest;
 import org.brusnitsyn.financetracker.model.dto.CategoryResponse;
 import org.brusnitsyn.financetracker.model.enums.TransactionType;
@@ -22,6 +23,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
+@Slf4j
 @RestController
 @RequestMapping("/categories")
 @Tag(name = "Categories", description = "Endpoints for managing transaction categories")
@@ -42,6 +44,7 @@ public class CategoryController {
     })
     @GetMapping
     public List<CategoryResponse> getCategories(@RequestParam(required = false) TransactionType type) {
+        log.debug("GET /categories");
         return categoryService.getCategories(type);
     }
 
@@ -57,6 +60,7 @@ public class CategoryController {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public CategoryResponse createCategory(@Valid @RequestBody CategoryCreateRequest request){
+        log.info("Create category request");
         return categoryService.createCategory(request);
     }
 
@@ -72,6 +76,7 @@ public class CategoryController {
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteCategory(@PathVariable Long id){
+        log.info("Delete category request");
         categoryService.deleteCategory(id);
     }
 }
