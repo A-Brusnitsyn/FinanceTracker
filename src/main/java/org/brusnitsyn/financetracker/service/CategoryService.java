@@ -30,11 +30,13 @@ public class CategoryService {
     public List<CategoryResponse> getCategories(TransactionType type){
         User user =currentUserService.getCurrentUser();
         log.info("Fetching categories for user ={} type={}",user.getEmail(),type);
-
-        return (type==null ? categoryRepository.findByUser(user) : categoryRepository.findByUserAndType(user, type))
+        List<CategoryResponse> categories = (type==null ? categoryRepository.findByUser(user) : categoryRepository.findByUserAndType(user, type))
                 .stream()
                 .map(categoryMapper::categoryToResponse)
                 .toList();
+        log.info("Found {} categories for user={}", categories.size(), user.getEmail());
+
+        return categories;
     }
 
     public CategoryResponse createCategory(CategoryCreateRequest request){
