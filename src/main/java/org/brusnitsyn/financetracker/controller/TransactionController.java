@@ -12,6 +12,7 @@ import org.brusnitsyn.financetracker.model.dto.TransactionCreateRequest;
 import org.brusnitsyn.financetracker.model.dto.TransactionResponse;
 import org.brusnitsyn.financetracker.model.enums.TransactionType;
 import org.brusnitsyn.financetracker.service.TransactionService;
+import org.springframework.data.domain.Page;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -58,19 +59,23 @@ public class TransactionController {
             @ApiResponse(responseCode = "200", description = "Transactions retrieved successfully"),
             @ApiResponse(responseCode = "404", description = "User not found")
     })
+
     @GetMapping
-    public List<TransactionResponse> getTransactions(
-            @Parameter(description = "Filter by account ID", example = "3")
-            @RequestParam(required = false) Long accountId,
-            @Parameter(description = "Filter by category ID", example = "5")
-            @RequestParam(required = false) Long categoryId,
-            @Parameter(description = "Filter by transaction type", example = "EXPENSE")
+    public Page<TransactionResponse> getTransactions(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "20") int size,
+            @RequestParam(required = false)
+            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
+            LocalDate from,
+            @RequestParam(required = false)
+            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
+            LocalDate to,
             @RequestParam(required = false) TransactionType type,
-            @Parameter(description = "Start date (ISO format)", example = "2024-01-01")
-            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate from,
-            @Parameter(description = "End date (ISO format)", example = "2024-12-31")
-            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate to) {
-        log.debug("Get transaction request");
-        return transactionService.getTransactions(accountId, categoryId, type, from, to);
+            @RequestParam(required = false) Long accountId,
+            @RequestParam(required = false) Long categoryId
+    ) {
+        return transactionService.getTransactions(
+                page, size, from, to, type, accountId, categoryId
+        );
     }
 }

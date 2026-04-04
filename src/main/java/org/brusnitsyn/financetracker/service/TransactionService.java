@@ -18,6 +18,11 @@ import org.brusnitsyn.financetracker.repository.AccountRepository;
 import org.brusnitsyn.financetracker.repository.CategoryRepository;
 import org.brusnitsyn.financetracker.repository.TransactionRepository;
 import org.brusnitsyn.financetracker.repository.UserRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -72,19 +77,47 @@ public class TransactionService {
         transactionRepository.save(transaction);
     }
 
-    public List<TransactionResponse> getTransactions(Long accountId, Long categoryId, TransactionType type, LocalDate fromDate, LocalDate toDate) {
-        User user =currentUserService.getCurrentUser();
-        log.info("Fetching transactions for user={}, accountId={}, categoryId={} type={}, from={}, to={}", user.getEmail(), accountId, categoryId, type, fromDate, toDate);
+    public Page<TransactionResponse> getTransactions(
+            int page,
+            int size,
+            LocalDate from,
+            LocalDate to,
+            TransactionType type,
+            Long accountId,
+            Long categoryId
+    ) {
+        User user = currentUserService.getCurrentUser();
 
-        List<Transaction> transactions = transactionRepository.findByUser(user);
+        Account account = null;
+        if (accountId != null) {
+            account = accountRepository.findById(accountId)
+                    .orElseThrow(() -> new AccountNotFoundException(accountId));
 
-        return transactions.stream()
-                .filter(transaction -> accountId==null || transaction.getAccount().getId().equals(accountId))
-                .filter(transaction -> categoryId==null || transaction.getCategory().getId().equals(categoryId))
-                .filter(transaction -> type == null || transaction.getType()==type)
-                .filter(transaction -> fromDate==null || !transaction.getDate().isBefore(fromDate))
-                .filter(transaction -> toDate==null || !transaction.getDate().isAfter(toDate))
-                .map(transactionMapper::transactionToResponse)
-                .toList();
+            if (!account.getUser().getId().equals(user.getId())) {
+                throw new AccessDeniedException("Account does not belong to user");
+            }
+        }
+
+        Category category = null;
+        if (categoryId != null) {
+            category = categoryRepository.findById(categoryId)
+                    .orElseThrow(() -> new CategoryNotFoundException(categoryId));
+        }
+
+        Pageable pageable = PageRequest.of(
+                page,
+                size,
+                Sort.by("date").descending()
+        );
+
+        return transactionRepository.findUserTransactions(
+                user,
+                from,
+                to,
+                type,
+                account,
+                category,
+                pageable
+        ).map(transactionMapper::transactionToResponse);
     }
 }
