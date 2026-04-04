@@ -1,0 +1,26 @@
+services:
+  db:
+    image: postgres:15
+    container_name: finance-db
+    environment:
+      POSTGRES_DB: FinanceTrackerDB
+      POSTGRES_USER: Alexandr
+      POSTGRES_PASSWORD: root
+    volumes:
+      - finance-db-data:/var/lib/postgresql/data
+
+  app:
+    build: .
+    container_name: finance-app
+    ports:
+      - "8080:8080"
+    depends_on:
+      - db
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/FinanceTrackerDB
+      SPRING_DATASOURCE_USERNAME: Alexandr
+      SPRING_DATASOURCE_PASSWORD: root
+      SPRING_JPA_HIBERNATE_DDL_AUTO: update
+
+volumes:
+  finance-db-data:
