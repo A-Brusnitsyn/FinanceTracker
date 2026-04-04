@@ -3,6 +3,7 @@ package org.brusnitsyn.financetracker.service;
 import org.brusnitsyn.financetracker.exception.UserNotFoundException;
 import org.brusnitsyn.financetracker.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -27,6 +28,7 @@ public class CustomUserDetailService implements UserDetailsService {
         return new org.springframework.security.core.userdetails.User(
                 user.getEmail(),
                 user.getPassword(),
-                List.of());
+                List.of(new  SimpleGrantedAuthority("ROLE_" + user.getRole().name()))
+        );
     }
 }

@@ -4,6 +4,7 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.extern.slf4j.Slf4j;
 import org.brusnitsyn.financetracker.service.CustomUserDetailService;
 import org.brusnitsyn.financetracker.service.JwtService;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -16,29 +17,16 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 
+@Slf4j
 @Component
 public class JwtFilter extends OncePerRequestFilter {
 
     private final JwtService jwtService;
     private final CustomUserDetailService userDetailService;
 
-    private static final List<String> PUBLIC_PATHS = Arrays.asList(
-            "/auth",
-            "/swagger-ui",
-            "/v3/api-docs",
-            "/swagger-resources",
-            "/webjars"
-    );
-
     public JwtFilter(JwtService jwtService, CustomUserDetailService customUserDetailService) {
         this.jwtService = jwtService;
         this.userDetailService = customUserDetailService;
-    }
-
-    @Override
-    protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
-        String path = request.getRequestURI();
-        return PUBLIC_PATHS.stream().anyMatch(path::startsWith);
     }
 
     @Override
@@ -47,6 +35,7 @@ public class JwtFilter extends OncePerRequestFilter {
             HttpServletResponse response,
             FilterChain filterChain
     ) throws ServletException, IOException {
+        log.debug("JWT filter: {} {}", request.getMethod(), request.getRequestURI());
 
         String header = request.getHeader("Authorization");
 
