@@ -4,6 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.brusnitsyn.financetracker.exception.UserAlreadyExistsException;
 import org.brusnitsyn.financetracker.model.dto.TokenResponse;
 import org.brusnitsyn.financetracker.model.entity.User;
+import org.brusnitsyn.financetracker.model.enums.Role;
 import org.brusnitsyn.financetracker.model.mappers.UserMapper;
 import org.brusnitsyn.financetracker.model.dto.RegistrationRequest;
 import org.brusnitsyn.financetracker.repository.UserRepository;
@@ -18,7 +19,7 @@ public class AuthService {
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
 
-    public AuthService(UserRepository userRepository, UserMapper userMapper, JwtService jwtService) {
+    public AuthService(UserRepository userRepository, JwtService jwtService) {
         this.userRepository = userRepository;
         this.passwordEncoder = new BCryptPasswordEncoder();
         this.jwtService = jwtService;
@@ -36,6 +37,7 @@ public class AuthService {
                 .email(request.getEmail())
                 .password(passwordEncoder.encode(request.getPassword()))
                 .name(request.getName())
+                .role(Role.USER)
                 .build();
 
         User savedUser = userRepository.save(user);

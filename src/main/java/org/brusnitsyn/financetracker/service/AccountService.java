@@ -11,6 +11,7 @@ import org.brusnitsyn.financetracker.model.entity.User;
 import org.brusnitsyn.financetracker.model.mappers.AccountMapper;
 import org.brusnitsyn.financetracker.repository.AccountRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -58,6 +59,7 @@ public class AccountService {
         return accountMapper.accountToResponse(savedAccount);
     }
 
+    @Transactional
     public AccountResponse updateAccount(Long accountId, UpdateAccountRequest request) {
         User user =currentUserService.getCurrentUser();
         log.info("Updating account name for id={}, user={}", accountId, user.getEmail());

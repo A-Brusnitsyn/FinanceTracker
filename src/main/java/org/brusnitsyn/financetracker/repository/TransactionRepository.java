@@ -19,8 +19,6 @@ import java.util.List;
 @Repository
 public interface TransactionRepository extends JpaRepository<Transaction, Long> {
 
-    List<Transaction> findByUserOrderByDateDesc(User user);
-
     @Query("""
     select t from Transaction t
     where t.user = :user
@@ -42,6 +40,4 @@ public interface TransactionRepository extends JpaRepository<Transaction, Long> 
 
 
     boolean existsByCategoryId(Long categoryId);
-
-    List<Transaction> findByUser(User user);
 }
