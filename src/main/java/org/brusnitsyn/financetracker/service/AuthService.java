@@ -5,7 +5,6 @@ import org.brusnitsyn.financetracker.exception.UserAlreadyExistsException;
 import org.brusnitsyn.financetracker.model.dto.TokenResponse;
 import org.brusnitsyn.financetracker.model.entity.User;
 import org.brusnitsyn.financetracker.model.enums.Role;
-import org.brusnitsyn.financetracker.model.mappers.UserMapper;
 import org.brusnitsyn.financetracker.model.dto.RegistrationRequest;
 import org.brusnitsyn.financetracker.repository.UserRepository;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;

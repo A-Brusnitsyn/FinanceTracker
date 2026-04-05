@@ -1,6 +1,5 @@
 package org.brusnitsyn.financetracker.model.dto;
 
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import lombok.AllArgsConstructor;
