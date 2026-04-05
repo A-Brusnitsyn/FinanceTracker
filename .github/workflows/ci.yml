@@ -65,7 +65,7 @@ jobs:
         run: mvn test -B -Dtest="!*IntegrationTest"
 
       - name: Run integration tests
-        run: mvn verify -B -Dit -Dspring.profiles.active=test
+        run: mvn verify -B -Dit "-Dspring.profiles.active=test"
         env:
           SPRING_DATASOURCE_URL: jdbc:postgresql://localhost:5432/test_db
           SPRING_DATASOURCE_USERNAME: test
