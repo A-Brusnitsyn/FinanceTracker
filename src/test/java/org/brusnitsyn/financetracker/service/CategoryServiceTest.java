@@ -1,5 +1,12 @@
 package org.brusnitsyn.financetracker.service;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.*;
+
+import java.util.List;
+import java.util.Optional;
 import org.brusnitsyn.financetracker.exception.CategoryAlreadyExistsException;
 import org.brusnitsyn.financetracker.exception.CategoryInUseException;
 import org.brusnitsyn.financetracker.exception.CategoryNotFoundException;
@@ -19,31 +26,18 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.util.List;
-import java.util.Optional;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
-
 @ExtendWith(MockitoExtension.class)
 class CategoryServiceTest {
 
-    @Mock
-    private CategoryRepository categoryRepository;
+    @Mock private CategoryRepository categoryRepository;
 
-    @Mock
-    private CategoryMapper categoryMapper;
+    @Mock private CategoryMapper categoryMapper;
 
-    @Mock
-    private TransactionRepository transactionRepository;
+    @Mock private TransactionRepository transactionRepository;
 
-    @Mock
-    private CurrentUserService currentUserService;
+    @Mock private CurrentUserService currentUserService;
 
-    @InjectMocks
-    private CategoryService categoryService;
+    @InjectMocks private CategoryService categoryService;
 
     private User testUser;
     private Category testCategory;
@@ -52,25 +46,28 @@ class CategoryServiceTest {
 
     @BeforeEach
     void setUp() {
-        testUser = User.builder()
-                .id(1L)
-                .email("test@example.com")
-                .name("Test User")
-                .role(Role.USER)
-                .build();
+        testUser =
+                User.builder()
+                        .id(1L)
+                        .email("test@example.com")
+                        .name("Test User")
+                        .role(Role.USER)
+                        .build();
 
-        testCategory = Category.builder()
-                .id(1L)
-                .user(testUser)
-                .name("Groceries")
-                .type(TransactionType.EXPENSE)
-                .build();
+        testCategory =
+                Category.builder()
+                        .id(1L)
+                        .user(testUser)
+                        .name("Groceries")
+                        .type(TransactionType.EXPENSE)
+                        .build();
 
-        testCategoryResponse = CategoryResponse.builder()
-                .id(1L)
-                .name("Groceries")
-                .type(TransactionType.EXPENSE)
-                .build();
+        testCategoryResponse =
+                CategoryResponse.builder()
+                        .id(1L)
+                        .name("Groceries")
+                        .type(TransactionType.EXPENSE)
+                        .build();
 
         createRequest = new CategoryCreateRequest();
         createRequest.setName("Entertainment");
@@ -130,7 +127,8 @@ class CategoryServiceTest {
     void createCategory_Success() {
         // Given
         when(currentUserService.getCurrentUser()).thenReturn(testUser);
-        when(categoryRepository.existsByUserAndNameIgnoreCaseAndType(testUser, "Entertainment", TransactionType.EXPENSE))
+        when(categoryRepository.existsByUserAndNameIgnoreCaseAndType(
+                        testUser, "Entertainment", TransactionType.EXPENSE))
                 .thenReturn(false);
         when(categoryRepository.save(any(Category.class))).thenReturn(testCategory);
         when(categoryMapper.categoryToResponse(testCategory)).thenReturn(testCategoryResponse);
@@ -149,7 +147,8 @@ class CategoryServiceTest {
     void createCategory_ThrowsException_WhenCategoryAlreadyExists() {
         // Given
         when(currentUserService.getCurrentUser()).thenReturn(testUser);
-        when(categoryRepository.existsByUserAndNameIgnoreCaseAndType(testUser, "Entertainment", TransactionType.EXPENSE))
+        when(categoryRepository.existsByUserAndNameIgnoreCaseAndType(
+                        testUser, "Entertainment", TransactionType.EXPENSE))
                 .thenReturn(true);
 
         // When & Then
@@ -164,7 +163,8 @@ class CategoryServiceTest {
     void deleteCategory_Success() {
         // Given
         when(currentUserService.getCurrentUser()).thenReturn(testUser);
-        when(categoryRepository.findByIdAndUser(1L, testUser)).thenReturn(Optional.of(testCategory));
+        when(categoryRepository.findByIdAndUser(1L, testUser))
+                .thenReturn(Optional.of(testCategory));
         when(transactionRepository.existsByCategoryId(1L)).thenReturn(false);
 
         // When
@@ -178,7 +178,8 @@ class CategoryServiceTest {
     void deleteCategory_ThrowsException_WhenCategoryInUse() {
         // Given
         when(currentUserService.getCurrentUser()).thenReturn(testUser);
-        when(categoryRepository.findByIdAndUser(1L, testUser)).thenReturn(Optional.of(testCategory));
+        when(categoryRepository.findByIdAndUser(1L, testUser))
+                .thenReturn(Optional.of(testCategory));
         when(transactionRepository.existsByCategoryId(1L)).thenReturn(true);
 
         // When & Then

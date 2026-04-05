@@ -1,5 +1,6 @@
 package org.brusnitsyn.financetracker.service;
 
+import java.util.List;
 import org.brusnitsyn.financetracker.exception.UserNotFoundException;
 import org.brusnitsyn.financetracker.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,8 +9,6 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
 
 @Service
 public class CustomUserDetailService implements UserDetailsService {
@@ -22,13 +21,14 @@ public class CustomUserDetailService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-        org.brusnitsyn.financetracker.model.entity.User user = userRepository.findByEmailIgnoreCase(email)
-                .orElseThrow(() -> new UserNotFoundException(email));
+        org.brusnitsyn.financetracker.model.entity.User user =
+                userRepository
+                        .findByEmailIgnoreCase(email)
+                        .orElseThrow(() -> new UserNotFoundException(email));
 
         return new org.springframework.security.core.userdetails.User(
                 user.getEmail(),
                 user.getPassword(),
-                List.of(new  SimpleGrantedAuthority("ROLE_" + user.getRole().name()))
-        );
+                List.of(new SimpleGrantedAuthority("ROLE_" + user.getRole().name())));
     }
 }

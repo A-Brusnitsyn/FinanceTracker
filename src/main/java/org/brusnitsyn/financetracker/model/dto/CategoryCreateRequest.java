@@ -15,10 +15,12 @@ import org.brusnitsyn.financetracker.model.enums.TransactionType;
 @NoArgsConstructor
 public class CategoryCreateRequest {
 
-    @NotBlank
-    private String name;
+    @NotBlank private String name;
 
     @NotNull
-    @Schema(description = "Transaction type (INCOME or EXPENSE)", example = "INCOME", required = true)
+    @Schema(
+            description = "Transaction type (INCOME or EXPENSE)",
+            example = "INCOME",
+            required = true)
     private TransactionType type;
 }

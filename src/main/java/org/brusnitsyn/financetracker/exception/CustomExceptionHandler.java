@@ -1,5 +1,6 @@
 package org.brusnitsyn.financetracker.exception;
 
+import java.time.LocalDateTime;
 import lombok.extern.slf4j.Slf4j;
 import org.brusnitsyn.financetracker.model.dto.ErrorResponse;
 import org.springframework.http.HttpStatus;
@@ -7,8 +8,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-
-import java.time.LocalDateTime;
 
 @RestControllerAdvice
 @Slf4j
@@ -65,12 +64,11 @@ public class CustomExceptionHandler {
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ErrorResponse> handleValidation(MethodArgumentNotValidException e) {
 
-        String message = e.getBindingResult()
-                .getFieldErrors()
-                .stream()
-                .map(err -> err.getField() + ": " + err.getDefaultMessage())
-                .findFirst()
-                .orElse("Validation error");
+        String message =
+                e.getBindingResult().getFieldErrors().stream()
+                        .map(err -> err.getField() + ": " + err.getDefaultMessage())
+                        .findFirst()
+                        .orElse("Validation error");
 
         log.error("Validation error: {}", message);
         return buildResponse(HttpStatus.BAD_REQUEST, message);
@@ -84,11 +82,12 @@ public class CustomExceptionHandler {
 
     private ResponseEntity<ErrorResponse> buildResponse(HttpStatus status, String message) {
         return ResponseEntity.status(status)
-                .body(ErrorResponse.builder()
-                        .status(status.value())
-                        .error(status.getReasonPhrase())
-                        .message(message)
-                        .date(LocalDateTime.now())
-                        .build());
+                .body(
+                        ErrorResponse.builder()
+                                .status(status.value())
+                                .error(status.getReasonPhrase())
+                                .message(message)
+                                .date(LocalDateTime.now())
+                                .build());
     }
 }

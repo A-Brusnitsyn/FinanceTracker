@@ -10,6 +10,6 @@ import lombok.Data;
 public class UpdateAccountRequest {
 
     @NotBlank
-    @Size(max=15)
+    @Size(max = 15)
     private String name;
 }

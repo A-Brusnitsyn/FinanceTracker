@@ -6,7 +6,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class CategoryMapper {
-    public CategoryResponse categoryToResponse (Category category){
+    public CategoryResponse categoryToResponse(Category category) {
         return CategoryResponse.builder()
                 .id(category.getId())
                 .name(category.getName())

@@ -31,15 +31,17 @@ public class AuthController {
     private final JwtService jwtService;
     private final AuthService authService;
 
-
     @Operation(
             summary = "Register new user",
-            description = "Creates a new user account with email, password and name"
-    )
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "201", description = "User successfully registered"),
-            @ApiResponse(responseCode = "400", description = "Invalid input data"),
-            @ApiResponse(responseCode = "409", description = "User with this email already exists")})
+            description = "Creates a new user account with email, password and name")
+    @ApiResponses(
+            value = {
+                @ApiResponse(responseCode = "201", description = "User successfully registered"),
+                @ApiResponse(responseCode = "400", description = "Invalid input data"),
+                @ApiResponse(
+                        responseCode = "409",
+                        description = "User with this email already exists")
+            })
     @PostMapping("/registration")
     @ResponseStatus(HttpStatus.CREATED)
     public TokenResponse register(@Valid @RequestBody RegistrationRequest request) {
@@ -47,20 +49,13 @@ public class AuthController {
         return authService.registerUser(request);
     }
 
-    @Operation(
-            summary = "Login",
-            description = "Authenticate in system"
-    )
+    @Operation(summary = "Login", description = "Authenticate in system")
     @PostMapping("/login")
     public TokenResponse login(@RequestBody LoginRequest request) {
         log.info("Login user={}", request.getEmail());
 
         authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(
-                        request.getEmail(),
-                        request.getPassword()
-                )
-        );
+                new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword()));
 
         String token = jwtService.generateToken(request.getEmail());
         return new TokenResponse(token);

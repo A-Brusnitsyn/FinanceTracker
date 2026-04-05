@@ -1,5 +1,14 @@
 package org.brusnitsyn.financetracker.service;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.*;
+
+import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.util.List;
+import java.util.Optional;
 import org.brusnitsyn.financetracker.exception.AccountNotFoundException;
 import org.brusnitsyn.financetracker.exception.CategoryNotFoundException;
 import org.brusnitsyn.financetracker.exception.InsufficientFundsException;
@@ -25,39 +34,22 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.*;
 import org.springframework.security.access.AccessDeniedException;
 
-import java.math.BigDecimal;
-import java.time.LocalDate;
-import java.util.List;
-import java.util.Optional;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
-
 @ExtendWith(MockitoExtension.class)
 class TransactionServiceTest {
 
-    @Mock
-    private AccountRepository accountRepository;
+    @Mock private AccountRepository accountRepository;
 
-    @Mock
-    private CategoryRepository categoryRepository;
+    @Mock private CategoryRepository categoryRepository;
 
-    @Mock
-    private TransactionRepository transactionRepository;
+    @Mock private TransactionRepository transactionRepository;
 
-    @Mock
-    private UserRepository userRepository;
+    @Mock private UserRepository userRepository;
 
-    @Mock
-    private TransactionMapper transactionMapper;
+    @Mock private TransactionMapper transactionMapper;
 
-    @Mock
-    private CurrentUserService currentUserService;
+    @Mock private CurrentUserService currentUserService;
 
-    @InjectMocks
-    private TransactionService transactionService;
+    @InjectMocks private TransactionService transactionService;
 
     private User testUser;
     private Account testAccount;
@@ -69,55 +61,61 @@ class TransactionServiceTest {
 
     @BeforeEach
     void setUp() {
-        testUser = User.builder()
-                .id(1L)
-                .email("test@example.com")
-                .name("Test User")
-                .role(Role.USER)
-                .build();
+        testUser =
+                User.builder()
+                        .id(1L)
+                        .email("test@example.com")
+                        .name("Test User")
+                        .role(Role.USER)
+                        .build();
 
-        testAccount = Account.builder()
-                .id(1L)
-                .user(testUser)
-                .name("Main Account")
-                .balance(BigDecimal.valueOf(1000))
-                .currency("USD")
-                .build();
+        testAccount =
+                Account.builder()
+                        .id(1L)
+                        .user(testUser)
+                        .name("Main Account")
+                        .balance(BigDecimal.valueOf(1000))
+                        .currency("USD")
+                        .build();
 
-        incomeCategory = Category.builder()
-                .id(1L)
-                .user(testUser)
-                .name("Salary")
-                .type(TransactionType.INCOME)
-                .build();
+        incomeCategory =
+                Category.builder()
+                        .id(1L)
+                        .user(testUser)
+                        .name("Salary")
+                        .type(TransactionType.INCOME)
+                        .build();
 
-        expenseCategory = Category.builder()
-                .id(2L)
-                .user(testUser)
-                .name("Groceries")
-                .type(TransactionType.EXPENSE)
-                .build();
+        expenseCategory =
+                Category.builder()
+                        .id(2L)
+                        .user(testUser)
+                        .name("Groceries")
+                        .type(TransactionType.EXPENSE)
+                        .build();
 
-        testTransaction = Transaction.builder()
-                .id(1L)
-                .user(testUser)
-                .account(testAccount)
-                .category(expenseCategory)
-                .amount(BigDecimal.valueOf(50))
-                .type(TransactionType.EXPENSE)
-                .description("Test transaction")
-                .date(LocalDate.now())
-                .build();
+        testTransaction =
+                Transaction.builder()
+                        .id(1L)
+                        .user(testUser)
+                        .account(testAccount)
+                        .category(expenseCategory)
+                        .amount(BigDecimal.valueOf(50))
+                        .type(TransactionType.EXPENSE)
+                        .description("Test transaction")
+                        .date(LocalDate.now())
+                        .build();
 
-        testTransactionResponse = TransactionResponse.builder()
-                .id(1L)
-                .accountId(1L)
-                .categoryId(2L)
-                .type(TransactionType.EXPENSE)
-                .amount(BigDecimal.valueOf(50))
-                .description("Test transaction")
-                .date(LocalDate.now())
-                .build();
+        testTransactionResponse =
+                TransactionResponse.builder()
+                        .id(1L)
+                        .accountId(1L)
+                        .categoryId(2L)
+                        .type(TransactionType.EXPENSE)
+                        .amount(BigDecimal.valueOf(50))
+                        .description("Test transaction")
+                        .date(LocalDate.now())
+                        .build();
 
         createRequest = new TransactionCreateRequest();
         createRequest.setAccountId(1L);
@@ -131,7 +129,8 @@ class TransactionServiceTest {
         // Given
         when(currentUserService.getCurrentUser()).thenReturn(testUser);
         when(accountRepository.findByIdAndUser(1L, testUser)).thenReturn(Optional.of(testAccount));
-        when(categoryRepository.findByIdAndUser(2L, testUser)).thenReturn(Optional.of(expenseCategory));
+        when(categoryRepository.findByIdAndUser(2L, testUser))
+                .thenReturn(Optional.of(expenseCategory));
         when(transactionRepository.save(any(Transaction.class))).thenReturn(testTransaction);
 
         // When
@@ -150,7 +149,8 @@ class TransactionServiceTest {
 
         when(currentUserService.getCurrentUser()).thenReturn(testUser);
         when(accountRepository.findByIdAndUser(1L, testUser)).thenReturn(Optional.of(testAccount));
-        when(categoryRepository.findByIdAndUser(1L, testUser)).thenReturn(Optional.of(incomeCategory));
+        when(categoryRepository.findByIdAndUser(1L, testUser))
+                .thenReturn(Optional.of(incomeCategory));
         when(transactionRepository.save(any(Transaction.class))).thenReturn(testTransaction);
 
         // When
@@ -168,7 +168,8 @@ class TransactionServiceTest {
 
         when(currentUserService.getCurrentUser()).thenReturn(testUser);
         when(accountRepository.findByIdAndUser(1L, testUser)).thenReturn(Optional.of(testAccount));
-        when(categoryRepository.findByIdAndUser(2L, testUser)).thenReturn(Optional.of(expenseCategory));
+        when(categoryRepository.findByIdAndUser(2L, testUser))
+                .thenReturn(Optional.of(expenseCategory));
 
         // When & Then
         assertThatThrownBy(() -> transactionService.createTransaction(createRequest))
@@ -218,19 +219,30 @@ class TransactionServiceTest {
         Page<Transaction> transactionPage = new PageImpl<>(List.of(testTransaction), pageable, 1);
 
         when(currentUserService.getCurrentUser()).thenReturn(testUser);
-        when(transactionRepository.findUserTransactions(eq(testUser), isNull(), isNull(), isNull(), isNull(), isNull(), any(Pageable.class)))
+        when(transactionRepository.findUserTransactions(
+                        eq(testUser),
+                        isNull(),
+                        isNull(),
+                        isNull(),
+                        isNull(),
+                        isNull(),
+                        any(Pageable.class)))
                 .thenReturn(transactionPage);
-        when(transactionMapper.transactionToResponse(testTransaction)).thenReturn(testTransactionResponse);
+        when(transactionMapper.transactionToResponse(testTransaction))
+                .thenReturn(testTransactionResponse);
 
         // When
-        Page<TransactionResponse> result = transactionService.getTransactions(0, 20, null, null, null, null, null);
+        Page<TransactionResponse> result =
+                transactionService.getTransactions(0, 20, null, null, null, null, null);
 
         // Then
         assertThat(result).isNotNull();
         assertThat(result.getContent()).hasSize(1);
         assertThat(result.getContent().get(0).getId()).isEqualTo(1L);
 
-        verify(transactionRepository).findUserTransactions(any(), any(), any(), any(), any(), any(), any(Pageable.class));
+        verify(transactionRepository)
+                .findUserTransactions(
+                        any(), any(), any(), any(), any(), any(), any(Pageable.class));
     }
 
     @Test
@@ -242,12 +254,21 @@ class TransactionServiceTest {
         Page<Transaction> transactionPage = new PageImpl<>(List.of(testTransaction), pageable, 1);
 
         when(currentUserService.getCurrentUser()).thenReturn(testUser);
-        when(transactionRepository.findUserTransactions(eq(testUser), eq(from), eq(to), isNull(), isNull(), isNull(), any(Pageable.class)))
+        when(transactionRepository.findUserTransactions(
+                        eq(testUser),
+                        eq(from),
+                        eq(to),
+                        isNull(),
+                        isNull(),
+                        isNull(),
+                        any(Pageable.class)))
                 .thenReturn(transactionPage);
-        when(transactionMapper.transactionToResponse(testTransaction)).thenReturn(testTransactionResponse);
+        when(transactionMapper.transactionToResponse(testTransaction))
+                .thenReturn(testTransactionResponse);
 
         // When
-        Page<TransactionResponse> result = transactionService.getTransactions(0, 10, from, to, null, null, null);
+        Page<TransactionResponse> result =
+                transactionService.getTransactions(0, 10, from, to, null, null, null);
 
         // Then
         assertThat(result).isNotNull();
@@ -264,7 +285,8 @@ class TransactionServiceTest {
         when(accountRepository.findById(1L)).thenReturn(Optional.of(otherAccount));
 
         // When & Then
-        assertThatThrownBy(() -> transactionService.getTransactions(0, 20, null, null, null, 1L, null))
+        assertThatThrownBy(
+                        () -> transactionService.getTransactions(0, 20, null, null, null, 1L, null))
                 .isInstanceOf(AccessDeniedException.class)
                 .hasMessageContaining("Account does not belong to user");
     }
@@ -276,12 +298,22 @@ class TransactionServiceTest {
         Page<Transaction> transactionPage = new PageImpl<>(List.of(testTransaction), pageable, 1);
 
         when(currentUserService.getCurrentUser()).thenReturn(testUser);
-        when(transactionRepository.findUserTransactions(eq(testUser), isNull(), isNull(), eq(TransactionType.EXPENSE), isNull(), isNull(), any(Pageable.class)))
+        when(transactionRepository.findUserTransactions(
+                        eq(testUser),
+                        isNull(),
+                        isNull(),
+                        eq(TransactionType.EXPENSE),
+                        isNull(),
+                        isNull(),
+                        any(Pageable.class)))
                 .thenReturn(transactionPage);
-        when(transactionMapper.transactionToResponse(testTransaction)).thenReturn(testTransactionResponse);
+        when(transactionMapper.transactionToResponse(testTransaction))
+                .thenReturn(testTransactionResponse);
 
         // When
-        Page<TransactionResponse> result = transactionService.getTransactions(0, 20, null, null, TransactionType.EXPENSE, null, null);
+        Page<TransactionResponse> result =
+                transactionService.getTransactions(
+                        0, 20, null, null, TransactionType.EXPENSE, null, null);
 
         // Then
         assertThat(result).isNotNull();
@@ -295,11 +327,19 @@ class TransactionServiceTest {
         Page<Transaction> transactionPage = new PageImpl<>(List.of(), pageable, 0);
 
         when(currentUserService.getCurrentUser()).thenReturn(testUser);
-        when(transactionRepository.findUserTransactions(eq(testUser), isNull(), isNull(), isNull(), isNull(), isNull(), any(Pageable.class)))
+        when(transactionRepository.findUserTransactions(
+                        eq(testUser),
+                        isNull(),
+                        isNull(),
+                        isNull(),
+                        isNull(),
+                        isNull(),
+                        any(Pageable.class)))
                 .thenReturn(transactionPage);
 
         // When
-        Page<TransactionResponse> result = transactionService.getTransactions(2, 5, null, null, null, null, null);
+        Page<TransactionResponse> result =
+                transactionService.getTransactions(2, 5, null, null, null, null, null);
 
         // Then
         assertThat(result).isNotNull();

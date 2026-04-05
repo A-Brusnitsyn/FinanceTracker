@@ -16,10 +16,11 @@ public class CurrentUserService {
     }
 
     public User getCurrentUser() {
-        Authentication auth =  SecurityContextHolder.getContext().getAuthentication();
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         String email = auth.getName();
 
-        return userRepository.findByEmailIgnoreCase(email)
-                .orElseThrow(()-> new UserNotFoundException(email));
+        return userRepository
+                .findByEmailIgnoreCase(email)
+                .orElseThrow(() -> new UserNotFoundException(email));
     }
 }

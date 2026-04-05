@@ -9,5 +9,4 @@ public enum TransactionType {
     TransactionType(String displayName) {
         this.displayName = displayName;
     }
-
 }

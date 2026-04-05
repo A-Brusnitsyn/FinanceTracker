@@ -1,11 +1,10 @@
 package org.brusnitsyn.financetracker.model.dto;
 
+import java.math.BigDecimal;
+import java.time.LocalDate;
 import lombok.Builder;
 import lombok.Data;
 import org.brusnitsyn.financetracker.model.enums.TransactionType;
-
-import java.math.BigDecimal;
-import java.time.LocalDate;
 
 @Data
 @Builder

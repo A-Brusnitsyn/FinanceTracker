@@ -2,16 +2,15 @@ package org.brusnitsyn.financetracker.service;
 
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.stereotype.Service;
-
-import javax.crypto.SecretKey;
 import java.nio.charset.StandardCharsets;
 import java.security.Key;
 import java.util.Date;
 import java.util.concurrent.TimeUnit;
+import javax.crypto.SecretKey;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.stereotype.Service;
 
 @Service
 @Slf4j
@@ -28,7 +27,9 @@ public class JwtService {
         return Jwts.builder()
                 .subject(email)
                 .issuedAt(new Date())
-                .expiration(new Date(System.currentTimeMillis() + TimeUnit.MINUTES.toMillis(expiration)))
+                .expiration(
+                        new Date(
+                                System.currentTimeMillis() + TimeUnit.MINUTES.toMillis(expiration)))
                 .signWith(getKey())
                 .compact();
     }
@@ -51,7 +52,6 @@ public class JwtService {
             return false;
         }
     }
-
 
     private Key getKey() {
         return Keys.hmacShaKeyFor(secret.getBytes(StandardCharsets.UTF_8));

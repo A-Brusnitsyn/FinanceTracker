@@ -10,10 +10,10 @@ import lombok.Data;
 public class CreateAccountRequest {
 
     @NotBlank
-    @Size(max=15)
+    @Size(max = 15)
     private String name;
 
     @NotBlank
-    @Size(min=3,max=3)
+    @Size(min = 3, max = 3)
     private String currency;
 }

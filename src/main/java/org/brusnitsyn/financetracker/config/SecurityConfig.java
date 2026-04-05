@@ -27,19 +27,23 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        return http
-                .csrf(AbstractHttpConfigurer::disable)
-                .authorizeHttpRequests(auth -> auth
-                        .requestMatchers(
-                                "/auth/**",
-                                "/swagger-ui/**",
-                                "/v3/api-docs/**",
-                                "/swagger-ui.html"
-                        ).permitAll()
-                        .requestMatchers("/actuator/health").permitAll()
-                        .requestMatchers("/actuator/**").hasRole("ADMIN")
-                        .anyRequest().hasAnyRole("USER", "ADMIN"))
-                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+        return http.csrf(AbstractHttpConfigurer::disable)
+                .authorizeHttpRequests(
+                        auth ->
+                                auth.requestMatchers(
+                                                "/auth/**",
+                                                "/swagger-ui/**",
+                                                "/v3/api-docs/**",
+                                                "/swagger-ui.html")
+                                        .permitAll()
+                                        .requestMatchers("/actuator/health")
+                                        .permitAll()
+                                        .requestMatchers("/actuator/**")
+                                        .hasRole("ADMIN")
+                                        .anyRequest()
+                                        .hasAnyRole("USER", "ADMIN"))
+                .sessionManagement(
+                        session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
                 .build();
     }
@@ -50,9 +54,8 @@ public class SecurityConfig {
     }
 
     @Bean
-    public AuthenticationManager authenticationManager(
-            AuthenticationConfiguration config
-    ) throws Exception {
+    public AuthenticationManager authenticationManager(AuthenticationConfiguration config)
+            throws Exception {
         return config.getAuthenticationManager();
     }
 }

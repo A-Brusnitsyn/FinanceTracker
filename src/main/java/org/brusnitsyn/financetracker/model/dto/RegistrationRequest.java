@@ -7,14 +7,11 @@ import lombok.Data;
 
 @Data
 public class RegistrationRequest {
-    @NotBlank
-    @Email
-    private String email;
+    @NotBlank @Email private String email;
 
     @NotBlank
     @Size(min = 6, max = 20)
     private String password;
 
-    @NotBlank
-    private String name;
+    @NotBlank private String name;
 }

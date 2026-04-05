@@ -1,6 +1,8 @@
 package org.brusnitsyn.financetracker.service;
 
 import jakarta.transaction.Transactional;
+import java.math.BigDecimal;
+import java.time.LocalDate;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.brusnitsyn.financetracker.exception.AccountNotFoundException;
@@ -25,9 +27,6 @@ import org.springframework.data.domain.Sort;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 
-import java.math.BigDecimal;
-import java.time.LocalDate;
-
 @Service
 @RequiredArgsConstructor
 @Slf4j
@@ -41,15 +40,23 @@ public class TransactionService {
 
     @Transactional
     public void createTransaction(TransactionCreateRequest request) {
-        User user =currentUserService.getCurrentUser();
-        log.info("Creating transaction user={}, accountId={}, categoryId={}, amount={}",
-                user.getEmail(), request.getAccountId(), request.getCategoryId(), request.getAmount());
+        User user = currentUserService.getCurrentUser();
+        log.info(
+                "Creating transaction user={}, accountId={}, categoryId={}, amount={}",
+                user.getEmail(),
+                request.getAccountId(),
+                request.getCategoryId(),
+                request.getAmount());
 
-        Account account = accountRepository.findByIdAndUser(request.getAccountId(), user)
-                .orElseThrow(() -> new AccountNotFoundException(request.getAccountId()));
+        Account account =
+                accountRepository
+                        .findByIdAndUser(request.getAccountId(), user)
+                        .orElseThrow(() -> new AccountNotFoundException(request.getAccountId()));
 
-        Category category = categoryRepository.findByIdAndUser(request.getCategoryId(), user)
-                .orElseThrow(() -> new CategoryNotFoundException(request.getCategoryId()));
+        Category category =
+                categoryRepository
+                        .findByIdAndUser(request.getCategoryId(), user)
+                        .orElseThrow(() -> new CategoryNotFoundException(request.getCategoryId()));
 
         BigDecimal newBalance;
 
@@ -64,15 +71,16 @@ public class TransactionService {
 
         account.setBalance(newBalance);
 
-        Transaction transaction = Transaction.builder()
-                .user(user)
-                .account(account)
-                .category(category)
-                .amount(request.getAmount())
-                .type(category.getType())
-                .description(request.getDescription())
-                .date(LocalDate.now())
-                .build();
+        Transaction transaction =
+                Transaction.builder()
+                        .user(user)
+                        .account(account)
+                        .category(category)
+                        .amount(request.getAmount())
+                        .type(category.getType())
+                        .description(request.getDescription())
+                        .date(LocalDate.now())
+                        .build();
         transactionRepository.save(transaction);
     }
 
@@ -83,14 +91,15 @@ public class TransactionService {
             LocalDate to,
             TransactionType type,
             Long accountId,
-            Long categoryId
-    ) {
+            Long categoryId) {
         User user = currentUserService.getCurrentUser();
 
         Account account = null;
         if (accountId != null) {
-            account = accountRepository.findById(accountId)
-                    .orElseThrow(() -> new AccountNotFoundException(accountId));
+            account =
+                    accountRepository
+                            .findById(accountId)
+                            .orElseThrow(() -> new AccountNotFoundException(accountId));
 
             if (!account.getUser().getId().equals(user.getId())) {
                 throw new AccessDeniedException("Account does not belong to user");
@@ -99,24 +108,16 @@ public class TransactionService {
 
         Category category = null;
         if (categoryId != null) {
-            category = categoryRepository.findById(categoryId)
-                    .orElseThrow(() -> new CategoryNotFoundException(categoryId));
+            category =
+                    categoryRepository
+                            .findById(categoryId)
+                            .orElseThrow(() -> new CategoryNotFoundException(categoryId));
         }
 
-        Pageable pageable = PageRequest.of(
-                page,
-                size,
-                Sort.by("date").descending()
-        );
+        Pageable pageable = PageRequest.of(page, size, Sort.by("date").descending());
 
-        return transactionRepository.findUserTransactions(
-                user,
-                from,
-                to,
-                type,
-                account,
-                category,
-                pageable
-        ).map(transactionMapper::transactionToResponse);
+        return transactionRepository
+                .findUserTransactions(user, from, to, type, account, category, pageable)
+                .map(transactionMapper::transactionToResponse);
     }
 }

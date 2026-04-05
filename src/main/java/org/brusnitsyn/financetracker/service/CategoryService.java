@@ -1,5 +1,6 @@
 package org.brusnitsyn.financetracker.service;
 
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.brusnitsyn.financetracker.exception.CategoryAlreadyExistsException;
@@ -15,8 +16,6 @@ import org.brusnitsyn.financetracker.repository.CategoryRepository;
 import org.brusnitsyn.financetracker.repository.TransactionRepository;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-
 @Service
 @RequiredArgsConstructor
 @Slf4j
@@ -27,33 +26,41 @@ public class CategoryService {
     private final TransactionRepository transactionRepository;
     private final CurrentUserService currentUserService;
 
-    public List<CategoryResponse> getCategories(TransactionType type){
-        User user =currentUserService.getCurrentUser();
-        log.info("Fetching categories for user ={} type={}",user.getEmail(),type);
-        List<CategoryResponse> categories = (type==null ? categoryRepository.findByUser(user) : categoryRepository.findByUserAndType(user, type))
-                .stream()
-                .map(categoryMapper::categoryToResponse)
-                .toList();
+    public List<CategoryResponse> getCategories(TransactionType type) {
+        User user = currentUserService.getCurrentUser();
+        log.info("Fetching categories for user ={} type={}", user.getEmail(), type);
+        List<CategoryResponse> categories =
+                (type == null
+                                ? categoryRepository.findByUser(user)
+                                : categoryRepository.findByUserAndType(user, type))
+                        .stream().map(categoryMapper::categoryToResponse).toList();
         log.info("Found {} categories for user={}", categories.size(), user.getEmail());
 
         return categories;
     }
 
-    public CategoryResponse createCategory(CategoryCreateRequest request){
-        User user =currentUserService.getCurrentUser();
-        log.info("Creating category name={}, type={}, user={}", request.getName(), request.getType(), user.getEmail());
+    public CategoryResponse createCategory(CategoryCreateRequest request) {
+        User user = currentUserService.getCurrentUser();
+        log.info(
+                "Creating category name={}, type={}, user={}",
+                request.getName(),
+                request.getType(),
+                user.getEmail());
 
-        boolean exists = categoryRepository.existsByUserAndNameIgnoreCaseAndType(user, request.getName(), request.getType());
+        boolean exists =
+                categoryRepository.existsByUserAndNameIgnoreCaseAndType(
+                        user, request.getName(), request.getType());
 
         if (exists) {
             throw new CategoryAlreadyExistsException(request.getName());
         }
 
-        Category category=Category.builder()
-                .name(request.getName())
-                .type(request.getType())
-                .user(user)
-                .build();
+        Category category =
+                Category.builder()
+                        .name(request.getName())
+                        .type(request.getType())
+                        .user(user)
+                        .build();
 
         Category saved = categoryRepository.save(category);
 
@@ -62,16 +69,18 @@ public class CategoryService {
         return categoryMapper.categoryToResponse(saved);
     }
 
-    public void deleteCategory(Long categoryId){
-        User user =currentUserService.getCurrentUser();
+    public void deleteCategory(Long categoryId) {
+        User user = currentUserService.getCurrentUser();
         log.info("Deleting category id={} for user={}", categoryId, user.getEmail());
 
-        Category category=categoryRepository.findByIdAndUser(categoryId, user).
-                orElseThrow(()->new CategoryNotFoundException(categoryId));
+        Category category =
+                categoryRepository
+                        .findByIdAndUser(categoryId, user)
+                        .orElseThrow(() -> new CategoryNotFoundException(categoryId));
 
-        boolean used=transactionRepository.existsByCategoryId(categoryId);
+        boolean used = transactionRepository.existsByCategoryId(categoryId);
 
-        if (used){
+        if (used) {
             throw new CategoryInUseException(categoryId);
         }
 

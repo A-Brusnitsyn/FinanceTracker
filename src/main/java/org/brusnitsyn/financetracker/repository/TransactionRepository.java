@@ -1,5 +1,6 @@
 package org.brusnitsyn.financetracker.repository;
 
+import java.time.LocalDate;
 import org.brusnitsyn.financetracker.model.entity.Account;
 import org.brusnitsyn.financetracker.model.entity.Category;
 import org.brusnitsyn.financetracker.model.entity.Transaction;
@@ -8,17 +9,15 @@ import org.brusnitsyn.financetracker.model.enums.TransactionType;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
-
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
-import java.time.LocalDate;
-
 @Repository
 public interface TransactionRepository extends JpaRepository<Transaction, Long> {
 
-    @Query("""
+    @Query(
+            """
                 SELECT t FROM Transaction t
                 WHERE t.user = :user
                 AND t.date >= COALESCE(:from, t.date)
@@ -35,9 +34,7 @@ public interface TransactionRepository extends JpaRepository<Transaction, Long> 
             @Param("type") TransactionType type,
             @Param("account") Account account,
             @Param("category") Category category,
-            Pageable pageable
-    );
-
+            Pageable pageable);
 
     boolean existsByCategoryId(Long categoryId);
 }

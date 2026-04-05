@@ -1,5 +1,13 @@
 package org.brusnitsyn.financetracker.service;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.*;
+
+import java.math.BigDecimal;
+import java.util.List;
+import java.util.Optional;
 import org.brusnitsyn.financetracker.exception.AccountHasBalanceException;
 import org.brusnitsyn.financetracker.exception.AccountNotFoundException;
 import org.brusnitsyn.financetracker.model.dto.AccountResponse;
@@ -17,29 +25,16 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.math.BigDecimal;
-import java.util.List;
-import java.util.Optional;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
-
 @ExtendWith(MockitoExtension.class)
 class AccountServiceTest {
 
-    @Mock
-    private AccountRepository accountRepository;
+    @Mock private AccountRepository accountRepository;
 
-    @Mock
-    private AccountMapper accountMapper;
+    @Mock private AccountMapper accountMapper;
 
-    @Mock
-    private CurrentUserService currentUserService;
+    @Mock private CurrentUserService currentUserService;
 
-    @InjectMocks
-    private AccountService accountService;
+    @InjectMocks private AccountService accountService;
 
     private User testUser;
     private Account testAccount;
@@ -49,27 +44,30 @@ class AccountServiceTest {
 
     @BeforeEach
     void setUp() {
-        testUser = User.builder()
-                .id(1L)
-                .email("test@example.com")
-                .name("Test User")
-                .role(Role.USER)
-                .build();
+        testUser =
+                User.builder()
+                        .id(1L)
+                        .email("test@example.com")
+                        .name("Test User")
+                        .role(Role.USER)
+                        .build();
 
-        testAccount = Account.builder()
-                .id(1L)
-                .user(testUser)
-                .name("Main Account")
-                .balance(BigDecimal.ZERO)
-                .currency("USD")
-                .build();
+        testAccount =
+                Account.builder()
+                        .id(1L)
+                        .user(testUser)
+                        .name("Main Account")
+                        .balance(BigDecimal.ZERO)
+                        .currency("USD")
+                        .build();
 
-        testAccountResponse = AccountResponse.builder()
-                .id(1L)
-                .name("Main Account")
-                .balance(BigDecimal.ZERO)
-                .currency("USD")
-                .build();
+        testAccountResponse =
+                AccountResponse.builder()
+                        .id(1L)
+                        .name("Main Account")
+                        .balance(BigDecimal.ZERO)
+                        .currency("USD")
+                        .build();
 
         createRequest = new CreateAccountRequest();
         createRequest.setName("New Account");
@@ -139,14 +137,20 @@ class AccountServiceTest {
         request.setCurrency("usd"); // lowercase
 
         when(currentUserService.getCurrentUser()).thenReturn(testUser);
-        when(accountRepository.save(any(Account.class))).thenAnswer(invocation -> {
-            Account saved = invocation.getArgument(0);
-            saved.setId(2L);
-            return saved;
-        });
-        when(accountMapper.accountToResponse(any(Account.class))).thenReturn(
-                AccountResponse.builder().id(2L).name("Test Account").currency("USD").build()
-        );
+        when(accountRepository.save(any(Account.class)))
+                .thenAnswer(
+                        invocation -> {
+                            Account saved = invocation.getArgument(0);
+                            saved.setId(2L);
+                            return saved;
+                        });
+        when(accountMapper.accountToResponse(any(Account.class)))
+                .thenReturn(
+                        AccountResponse.builder()
+                                .id(2L)
+                                .name("Test Account")
+                                .currency("USD")
+                                .build());
 
         // When
         AccountResponse result = accountService.createAccount(request);
