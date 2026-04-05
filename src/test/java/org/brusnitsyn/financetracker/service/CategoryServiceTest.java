@@ -7,6 +7,8 @@ import static org.mockito.Mockito.*;
 
 import java.util.List;
 import java.util.Optional;
+
+import org.brusnitsyn.financetracker.PostgresTestContainer;
 import org.brusnitsyn.financetracker.exception.CategoryAlreadyExistsException;
 import org.brusnitsyn.financetracker.exception.CategoryInUseException;
 import org.brusnitsyn.financetracker.exception.CategoryNotFoundException;
@@ -27,7 +29,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 @ExtendWith(MockitoExtension.class)
-class CategoryServiceTest {
+class CategoryServiceTest implements PostgresTestContainer {
 
     @Mock private CategoryRepository categoryRepository;
 

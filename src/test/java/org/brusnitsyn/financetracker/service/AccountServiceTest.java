@@ -8,6 +8,8 @@ import static org.mockito.Mockito.*;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
+
+import org.brusnitsyn.financetracker.PostgresTestContainer;
 import org.brusnitsyn.financetracker.exception.AccountHasBalanceException;
 import org.brusnitsyn.financetracker.exception.AccountNotFoundException;
 import org.brusnitsyn.financetracker.model.dto.AccountResponse;
@@ -26,7 +28,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 @ExtendWith(MockitoExtension.class)
-class AccountServiceTest {
+class AccountServiceTest implements PostgresTestContainer {
 
     @Mock private AccountRepository accountRepository;
 

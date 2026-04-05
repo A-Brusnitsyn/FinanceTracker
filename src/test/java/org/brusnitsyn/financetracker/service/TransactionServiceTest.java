@@ -9,6 +9,8 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
+
+import org.brusnitsyn.financetracker.PostgresTestContainer;
 import org.brusnitsyn.financetracker.exception.AccountNotFoundException;
 import org.brusnitsyn.financetracker.exception.CategoryNotFoundException;
 import org.brusnitsyn.financetracker.exception.InsufficientFundsException;
@@ -35,7 +37,7 @@ import org.springframework.data.domain.*;
 import org.springframework.security.access.AccessDeniedException;
 
 @ExtendWith(MockitoExtension.class)
-class TransactionServiceTest {
+class TransactionServiceTest implements PostgresTestContainer {
 
     @Mock private AccountRepository accountRepository;
 
