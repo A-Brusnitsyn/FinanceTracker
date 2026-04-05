@@ -17,7 +17,6 @@ import org.springframework.test.context.TestPropertySource;
         "spring.flyway.enabled=false"
 })
 class FinanceTrackerApplicationTests {
-
     @Test
     void contextLoads() {}
 }
