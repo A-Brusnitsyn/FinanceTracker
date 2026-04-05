@@ -112,8 +112,8 @@ jobs:
           distribution: 'temurin'
           cache: 'maven'
 
-      - name: Run tests with coverage
-        run: mvn test jacoco:report -B
+      - name: Run tests
+        run: mvn test -B "-Dspring.profiles.active=test"
 
       - name: Upload to Codecov
         uses: codecov/codecov-action@v3
