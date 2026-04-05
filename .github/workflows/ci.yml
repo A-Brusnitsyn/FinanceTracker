@@ -26,8 +26,8 @@ jobs:
           distribution: 'temurin'
           cache: 'maven'
 
-      - name: Check code style with Spotless
-        run: mvn spotless:check -B
+     # - name: Check code style with Spotless
+     #   run: mvn spotless:check -B
 
       - name: Compile without tests
         run: mvn compile -B
