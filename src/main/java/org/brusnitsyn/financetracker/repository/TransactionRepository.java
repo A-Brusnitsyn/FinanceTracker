@@ -20,14 +20,15 @@ import java.util.List;
 public interface TransactionRepository extends JpaRepository<Transaction, Long> {
 
     @Query("""
-    select t from Transaction t
-    where t.user = :user
-      and (:from is null or t.date >= :from)
-      and (:to is null or t.date <= :to)
-      and (:type is null or t.type = :type)
-      and (:account is null or t.account = :account)
-      and (:category is null or t.category = :category)
-""")
+                SELECT t FROM Transaction t
+                WHERE t.user = :user
+                AND t.date >= COALESCE(:from, t.date)
+                AND t.date <= COALESCE(:to, t.date)
+                AND (:type IS NULL OR t.type = :type)
+                AND (:account IS NULL OR t.account = :account)
+                AND (:category IS NULL OR t.category = :category)
+                ORDER BY t.date DESC
+            """)
     Page<Transaction> findUserTransactions(
             @Param("user") User user,
             @Param("from") LocalDate from,

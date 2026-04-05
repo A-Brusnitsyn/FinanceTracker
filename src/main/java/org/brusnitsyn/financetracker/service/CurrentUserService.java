@@ -19,7 +19,7 @@ public class CurrentUserService {
         Authentication auth =  SecurityContextHolder.getContext().getAuthentication();
         String email = auth.getName();
 
-        return userRepository.findByEmail(email)
+        return userRepository.findByEmailIgnoreCase(email)
                 .orElseThrow(()-> new UserNotFoundException(email));
     }
 }

@@ -22,7 +22,7 @@ public class CustomUserDetailService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-        org.brusnitsyn.financetracker.model.entity.User user = userRepository.findByEmail(email)
+        org.brusnitsyn.financetracker.model.entity.User user = userRepository.findByEmailIgnoreCase(email)
                 .orElseThrow(() -> new UserNotFoundException(email));
 
         return new org.springframework.security.core.userdetails.User(

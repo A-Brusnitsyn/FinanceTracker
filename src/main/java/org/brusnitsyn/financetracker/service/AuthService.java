@@ -28,7 +28,7 @@ public class AuthService {
     public TokenResponse registerUser(RegistrationRequest request) {
         log.info("Registering new user with email: " + request.getEmail());
 
-        if (userRepository.existsByEmail(request.getEmail())) {
+        if (userRepository.existsByEmailIgnoreCase(request.getEmail())) {
             log.warn("Attempt to register existing email: " + request.getEmail());
             throw new UserAlreadyExistsException(request.getEmail());
         }
